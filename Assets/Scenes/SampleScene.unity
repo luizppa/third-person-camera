@@ -328,6 +328,12 @@ MonoBehaviour:
     radius: 1
     height: -1
     color: {r: 1, g: 0, b: 0, a: 1}
+  horizontalAxis: Mouse X
+  horizontalSensibility: 1
+  invertX: 0
+  verticalAxis: Mouse Y
+  verticalSensibility: 0.8
+  invertY: 0
   showGizmos: 1
 --- !u!1 &1567659545
 GameObject:
