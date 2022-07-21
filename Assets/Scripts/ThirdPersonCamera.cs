@@ -88,23 +88,35 @@ public class ThirdPersonCamera : MonoBehaviour
     transform.RotateAround(follow.transform.position, follow.transform.up, cameraTranslation);
   }
 
+  private float EaseLerpRingRadius(RingConfiguration r1, RingConfiguration r2, float referenceHeight)
+  {
+    float lerpState = Mathf.InverseLerp(r1.height, r2.height, referenceHeight);
+    if (r1.radius > r2.radius)
+    {
+      lerpState = lerpState * lerpState;
+    }
+    else
+    {
+      lerpState = Mathf.Sqrt(lerpState);
+    }
+    float radius = Mathf.Lerp(r1.radius, r2.radius, lerpState);
+    return radius;
+  }
+
   private RingConfiguration GetCameraRing(float referenceHeight)
   {
-    // TODO: Modify lerp to ease-in-out
     if (referenceHeight >= topRing.height)
     {
       return new RingConfiguration { radius = topRing.radius, height = topRing.height, color = Color.green };
     }
     else if (referenceHeight >= middleRing.height)
     {
-      float lerpState = Mathf.InverseLerp(middleRing.height, topRing.height, referenceHeight);
-      float radius = Mathf.Lerp(middleRing.radius, topRing.radius, lerpState);
+      float radius = EaseLerpRingRadius(middleRing, topRing, referenceHeight);
       return new RingConfiguration { radius = radius, height = referenceHeight, color = Color.green };
     }
     else if (referenceHeight >= bottomRing.height)
     {
-      float lerpState = Mathf.InverseLerp(bottomRing.height, middleRing.height, referenceHeight);
-      float radius = Mathf.Lerp(bottomRing.radius, middleRing.radius, lerpState);
+      float radius = EaseLerpRingRadius(bottomRing, middleRing, referenceHeight);
       return new RingConfiguration { radius = radius, height = referenceHeight, color = Color.green };
     }
     else

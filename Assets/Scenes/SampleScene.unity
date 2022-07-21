@@ -333,7 +333,7 @@ MonoBehaviour:
   invertX: 0
   verticalAxis: Mouse Y
   verticalSensibility: 0.8
-  invertY: 0
+  invertY: 1
   showGizmos: 1
 --- !u!1 &1567659545
 GameObject:
