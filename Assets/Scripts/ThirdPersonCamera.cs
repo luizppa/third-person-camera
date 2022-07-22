@@ -11,7 +11,7 @@ public class RingConfiguration
   public float height = 2.5f;
   public Color color = Color.red;
 
-  public float GetBorderDistanceToCenter()
+  public float GetBorderDistanceToReference()
   {
     return Mathf.Sqrt((radius * radius) + (height * height));
   }
@@ -26,13 +26,16 @@ public class ThirdPersonCamera : MonoBehaviour
 
   [Header("Orbits")]
   [SerializeField] RingConfiguration topRing = new RingConfiguration { radius = 2f, height = 1.4f, color = Color.red };
-  [SerializeField] RingConfiguration middleRing = new RingConfiguration { radius = 2f, height = 1.4f, color = Color.red };
-  [SerializeField] RingConfiguration bottomRing = new RingConfiguration { radius = 2f, height = 1.4f, color = Color.red };
+  [SerializeField] RingConfiguration middleRing = new RingConfiguration { radius = 0.5f, height = 3f, color = Color.red };
+  [SerializeField] RingConfiguration bottomRing = new RingConfiguration { radius = 1f, height = -1f, color = Color.red };
+  [SerializeField] bool avoidClipping = true;
 
   [Header("Controls")]
+  [Header("X axis")]
   [SerializeField] string horizontalAxis = "Mouse X";
   [SerializeField] float horizontalSensibility = 1f;
   [SerializeField] bool invertX = false;
+  [Header("Y axis")]
   [SerializeField] string verticalAxis = "Mouse Y";
   [SerializeField] float verticalSensibility = 1f;
   [SerializeField] bool invertY = true;
@@ -42,13 +45,14 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private float cameraTranslation = 0f;
   private float verticalMultiplier = 10f;
+  private float referenceHeight;
+  private float referenceDistance;
 
   void Start()
   {
     InitPosition();
   }
 
-  // Update is called once per frame
   void Update()
   {
     SetPosition();
@@ -57,7 +61,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void InitPosition()
   {
-    transform.position = follow.transform.position - (follow.transform.forward * middleRing.GetBorderDistanceToCenter());
+    transform.position = follow.transform.position - (follow.transform.forward * middleRing.GetBorderDistanceToReference());
   }
 
   private void SetPosition()
@@ -75,20 +79,37 @@ public class ThirdPersonCamera : MonoBehaviour
     }
     Plane referencePlane = new Plane(follow.transform.up, follow.transform.position);
 
-    float referenceHeight = referencePlane.GetDistanceToPoint(transform.position + movement);
-    float referenceDistance = 0f;
+    referenceHeight = referencePlane.GetDistanceToPoint(transform.position + movement);
+    referenceDistance = 0f;
 
-    RingConfiguration cameraRing = GetCameraRing(referenceHeight);
+    RingConfiguration cameraRing = GetCameraRing();
 
     referenceHeight = cameraRing.height;
-    float distance = cameraRing.GetBorderDistanceToCenter();
+    float distance = cameraRing.GetBorderDistanceToReference();
     referenceDistance = Mathf.Sqrt((distance * distance) - (referenceHeight * referenceHeight));
+    CorrectClipping();
 
     transform.position = follow.transform.position + (follow.transform.up * referenceHeight) - (follow.transform.forward * referenceDistance);
     transform.RotateAround(follow.transform.position, follow.transform.up, cameraTranslation);
   }
 
-  private float EaseLerpRingRadius(RingConfiguration r1, RingConfiguration r2, float referenceHeight)
+  private void CorrectClipping()
+  {
+    RaycastHit hit;
+    Ray ray = new Ray(follow.transform.position, (transform.position - follow.transform.position).normalized);
+
+    if (avoidClipping && Physics.Raycast(ray, out hit, referenceDistance))
+    {
+      referenceDistance = hit.distance;
+    }
+  }
+
+  private void SetRotation()
+  {
+    transform.LookAt(lookAt.transform);
+  }
+
+  private float EaseLerpRingRadius(RingConfiguration r1, RingConfiguration r2)
   {
     float lerpState = Mathf.InverseLerp(r1.height, r2.height, referenceHeight);
     if (r1.radius > r2.radius)
@@ -103,7 +124,7 @@ public class ThirdPersonCamera : MonoBehaviour
     return radius;
   }
 
-  private RingConfiguration GetCameraRing(float referenceHeight)
+  private RingConfiguration GetCameraRing()
   {
     if (referenceHeight >= topRing.height)
     {
@@ -111,12 +132,12 @@ public class ThirdPersonCamera : MonoBehaviour
     }
     else if (referenceHeight >= middleRing.height)
     {
-      float radius = EaseLerpRingRadius(middleRing, topRing, referenceHeight);
+      float radius = EaseLerpRingRadius(middleRing, topRing);
       return new RingConfiguration { radius = radius, height = referenceHeight, color = Color.green };
     }
     else if (referenceHeight >= bottomRing.height)
     {
-      float radius = EaseLerpRingRadius(bottomRing, middleRing, referenceHeight);
+      float radius = EaseLerpRingRadius(bottomRing, middleRing);
       return new RingConfiguration { radius = radius, height = referenceHeight, color = Color.green };
     }
     else
@@ -125,34 +146,8 @@ public class ThirdPersonCamera : MonoBehaviour
     }
   }
 
-  private void SetRotation()
-  {
-    transform.LookAt(lookAt.transform);
-    // float angle = Vector3.Angle(transform.up, follow.transform.up);
-    // float angleState = Mathf.InverseLerp(0f, 180f, cameraTranslation);
-    // if (cameraTranslation > 180f)
-    // {
-    //   angleState = Mathf.InverseLerp(360f, 180f, cameraTranslation);
-    // }
-    // float angle = Mathf.Lerp(follow.transform.eulerAngles.z, -follow.transform.eulerAngles.z, angleState);
-    // transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, angle);
-  }
-
-  private void InitRotation()
-  {
-
-  }
-
   private void OnDrawGizmos()
   {
-    /*Gizmos.DrawCube(-1f * Vector3.right, Vector3.one * cubeSize);
-
-    Gizmos.color = Color.red;
-    Gizmos.DrawSphere(Vector3.right, 0.5f);
-
-    Gizmos.color = Color.white;
-    Gizmos.DrawSphere(3f * Vector3.right, 0.5f);*/
-
     if (follow != null && showGizmos)
     {
       DrawRing(topRing);
