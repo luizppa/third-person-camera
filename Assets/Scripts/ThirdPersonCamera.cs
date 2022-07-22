@@ -45,8 +45,10 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private float cameraTranslation = 0f;
   private float verticalMultiplier = 10f;
-  private float referenceHeight;
+  private float referenceHeight = 0f;
   private float referenceDistance;
+  private float noClippingHeight;
+  private float noClippingDistance;
 
   void Start()
   {
@@ -66,7 +68,26 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void SetPosition()
   {
-    Vector3 movement = follow.transform.up * Input.GetAxis(verticalAxis) * verticalSensibility * (invertY ? -1 : 1);
+    ReadInputs();
+    referenceDistance = 0f;
+
+    RingConfiguration cameraRing = GetCameraRing();
+
+    referenceHeight = cameraRing.height;
+    float distance = cameraRing.GetBorderDistanceToReference();
+    referenceDistance = Mathf.Sqrt((distance * distance) - (referenceHeight * referenceHeight));
+    CorrectClipping(distance);
+
+    Vector3 heightVector = follow.transform.up * (avoidClipping ? noClippingHeight : referenceHeight);
+    Vector3 distanceVector = follow.transform.forward * (avoidClipping ? noClippingDistance : referenceDistance);
+
+    transform.position = follow.transform.position + heightVector + distanceVector;
+    transform.RotateAround(follow.transform.position, follow.transform.up, cameraTranslation);
+  }
+
+  private void ReadInputs()
+  {
+    referenceHeight += Input.GetAxis(verticalAxis) * verticalSensibility * (invertY ? -1 : 1);
     cameraTranslation += Input.GetAxis(horizontalAxis) * verticalMultiplier * horizontalSensibility * (invertX ? -1 : 1);
 
     if (cameraTranslation > 360f)
@@ -77,30 +98,25 @@ public class ThirdPersonCamera : MonoBehaviour
     {
       cameraTranslation += 360f;
     }
-    Plane referencePlane = new Plane(follow.transform.up, follow.transform.position);
-
-    referenceHeight = referencePlane.GetDistanceToPoint(transform.position + movement);
-    referenceDistance = 0f;
-
-    RingConfiguration cameraRing = GetCameraRing();
-
-    referenceHeight = cameraRing.height;
-    float distance = cameraRing.GetBorderDistanceToReference();
-    referenceDistance = Mathf.Sqrt((distance * distance) - (referenceHeight * referenceHeight));
-    CorrectClipping();
-
-    transform.position = follow.transform.position + (follow.transform.up * referenceHeight) - (follow.transform.forward * referenceDistance);
-    transform.RotateAround(follow.transform.position, follow.transform.up, cameraTranslation);
   }
 
-  private void CorrectClipping()
+  private void CorrectClipping(float raycastDistance)
   {
     RaycastHit hit;
     Ray ray = new Ray(follow.transform.position, (transform.position - follow.transform.position).normalized);
 
-    if (avoidClipping && Physics.Raycast(ray, out hit, referenceDistance))
+    if (avoidClipping && Physics.Raycast(ray, out hit, raycastDistance))
     {
-      referenceDistance = hit.distance;
+      float sinAngl = referenceHeight / raycastDistance;
+      float cosAngl = referenceDistance / raycastDistance;
+
+      noClippingHeight = hit.distance * sinAngl;
+      noClippingDistance = hit.distance * cosAngl;
+    }
+    else
+    {
+      noClippingHeight = referenceHeight;
+      noClippingDistance = referenceDistance;
     }
   }
 
