@@ -29,6 +29,7 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] RingConfiguration middleRing = new RingConfiguration { radius = 0.5f, height = 3f, color = Color.red };
   [SerializeField] RingConfiguration bottomRing = new RingConfiguration { radius = 1f, height = -1f, color = Color.red };
   [SerializeField] bool avoidClipping = true;
+  [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
 
   [Header("Controls")]
   [Header("X axis")]
@@ -107,11 +108,12 @@ public class ThirdPersonCamera : MonoBehaviour
 
     if (avoidClipping && Physics.Raycast(ray, out hit, raycastDistance))
     {
+      float safeDistance = hit.distance - clippingOffset;
       float sinAngl = referenceHeight / raycastDistance;
       float cosAngl = referenceDistance / raycastDistance;
 
-      noClippingHeight = hit.distance * sinAngl;
-      noClippingDistance = hit.distance * cosAngl;
+      noClippingHeight = safeDistance * sinAngl;
+      noClippingDistance = safeDistance * cosAngl;
     }
     else
     {
