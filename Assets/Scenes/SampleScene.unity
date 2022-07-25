@@ -526,7 +526,7 @@ MonoBehaviour:
   clippingOffset: 0
   horizontalTilt: 0
   verticalTilt: 0
-  useFollowNormal: 0
+  useFollowNormal: 1
   horizontalAxis: Mouse X
   horizontalSensibility: 1
   invertX: 0
