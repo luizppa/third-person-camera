@@ -28,8 +28,12 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] RingConfiguration topRing = new RingConfiguration { radius = 2f, height = 1.4f, color = Color.red };
   [SerializeField] RingConfiguration middleRing = new RingConfiguration { radius = 0.5f, height = 3f, color = Color.red };
   [SerializeField] RingConfiguration bottomRing = new RingConfiguration { radius = 1f, height = -1f, color = Color.red };
+
+  [Header("Positioning")]
   [SerializeField] bool avoidClipping = true;
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
+  [SerializeField][Range(-180, 180)] float horizontalTilt = 0f;
+  [SerializeField][Range(-180, 180)] float verticalTilt = 0f;
 
   [Header("Controls")]
   [Header("X axis")]
@@ -50,6 +54,7 @@ public class ThirdPersonCamera : MonoBehaviour
   private float referenceDistance;
   private float noClippingHeight;
   private float noClippingDistance;
+  private RingConfiguration cameraRing = null;
 
   void Start()
   {
@@ -72,7 +77,7 @@ public class ThirdPersonCamera : MonoBehaviour
     ReadInputs();
     referenceDistance = 0f;
 
-    RingConfiguration cameraRing = GetCameraRing();
+    cameraRing = GetCameraRing();
 
     referenceHeight = cameraRing.height;
     float distance = cameraRing.GetBorderDistanceToReference();
@@ -84,6 +89,24 @@ public class ThirdPersonCamera : MonoBehaviour
 
     transform.position = follow.transform.position + heightVector + distanceVector;
     transform.RotateAround(follow.transform.position, follow.transform.up, cameraTranslation);
+  }
+
+  private void SetRotation()
+  {
+    LookAt(follow.transform, lookAt.transform);
+
+    Vector3 verticalAngles = follow.transform.right * verticalTilt;
+    Vector3 horizontalAngles = follow.transform.up * horizontalTilt;
+
+    Vector3 eulerRotation = verticalAngles + horizontalAngles;
+    transform.Rotate(eulerRotation.x, eulerRotation.y, eulerRotation.z);
+  }
+
+  private void LookAt(Transform follow, Transform lookAt)
+  {
+    Vector3 normal = follow.up;
+    transform.localRotation = Quaternion.LookRotation((lookAt.position - transform.position).normalized, normal);
+    // WallBones[1].localRotation = Quaternion.LookRotation((Vector3.zero - WallBones[1].position).normalized, PlanarUp);
   }
 
   private void ReadInputs()
@@ -120,11 +143,6 @@ public class ThirdPersonCamera : MonoBehaviour
       noClippingHeight = referenceHeight;
       noClippingDistance = referenceDistance;
     }
-  }
-
-  private void SetRotation()
-  {
-    transform.LookAt(lookAt.transform);
   }
 
   private float EaseLerpRingRadius(RingConfiguration r1, RingConfiguration r2)
@@ -171,6 +189,10 @@ public class ThirdPersonCamera : MonoBehaviour
       DrawRing(topRing);
       DrawRing(middleRing);
       DrawRing(bottomRing);
+      if (cameraRing != null)
+      {
+        DrawRing(cameraRing);
+      }
     }
   }
 
