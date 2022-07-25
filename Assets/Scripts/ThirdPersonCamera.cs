@@ -34,6 +34,7 @@ public class ThirdPersonCamera : MonoBehaviour
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
   [SerializeField][Range(-180, 180)] float horizontalTilt = 0f;
   [SerializeField][Range(-180, 180)] float verticalTilt = 0f;
+  [SerializeField] bool useFollowNormal = true;
 
   [Header("Controls")]
   [Header("X axis")]
@@ -55,21 +56,33 @@ public class ThirdPersonCamera : MonoBehaviour
   private float noClippingHeight;
   private float noClippingDistance;
   private RingConfiguration cameraRing = null;
+  private Vector3 up;
+  private Vector3 right;
+  private Vector3 forward;
 
   void Start()
   {
+    SetNormalVectors();
     InitPosition();
   }
 
   void Update()
   {
+    SetNormalVectors();
     SetPosition();
     SetRotation();
   }
 
   private void InitPosition()
   {
-    transform.position = follow.transform.position - (follow.transform.forward * middleRing.GetBorderDistanceToReference());
+    transform.position = follow.transform.position - (forward * middleRing.GetBorderDistanceToReference());
+  }
+
+  private void SetNormalVectors()
+  {
+    up = useFollowNormal ? follow.transform.up : Vector3.up;
+    right = useFollowNormal ? follow.transform.right : Vector3.right;
+    forward = useFollowNormal ? follow.transform.forward : Vector3.forward;
   }
 
   private void SetPosition()
@@ -84,29 +97,27 @@ public class ThirdPersonCamera : MonoBehaviour
     referenceDistance = Mathf.Sqrt((distance * distance) - (referenceHeight * referenceHeight));
     CorrectClipping(distance);
 
-    Vector3 heightVector = follow.transform.up * (avoidClipping ? noClippingHeight : referenceHeight);
-    Vector3 distanceVector = follow.transform.forward * (avoidClipping ? noClippingDistance : referenceDistance);
+    Vector3 heightVector = up * (avoidClipping ? noClippingHeight : referenceHeight);
+    Vector3 distanceVector = forward * (avoidClipping ? noClippingDistance : referenceDistance);
 
     transform.position = follow.transform.position + heightVector + distanceVector;
-    transform.RotateAround(follow.transform.position, follow.transform.up, cameraTranslation);
+    transform.RotateAround(follow.transform.position, up, cameraTranslation);
   }
 
   private void SetRotation()
   {
-    LookAt(follow.transform, lookAt.transform);
+    LookAt(up, lookAt.transform);
 
-    Vector3 verticalAngles = follow.transform.right * verticalTilt;
-    Vector3 horizontalAngles = follow.transform.up * horizontalTilt;
+    Vector3 verticalAngles = right * verticalTilt;
+    Vector3 horizontalAngles = up * horizontalTilt;
 
     Vector3 eulerRotation = verticalAngles + horizontalAngles;
     transform.Rotate(eulerRotation.x, eulerRotation.y, eulerRotation.z);
   }
 
-  private void LookAt(Transform follow, Transform lookAt)
+  private void LookAt(Vector3 normal, Transform lookAt)
   {
-    Vector3 normal = follow.up;
     transform.localRotation = Quaternion.LookRotation((lookAt.position - transform.position).normalized, normal);
-    // WallBones[1].localRotation = Quaternion.LookRotation((Vector3.zero - WallBones[1].position).normalized, PlanarUp);
   }
 
   private void ReadInputs()
@@ -189,17 +200,14 @@ public class ThirdPersonCamera : MonoBehaviour
       DrawRing(topRing);
       DrawRing(middleRing);
       DrawRing(bottomRing);
-      if (cameraRing != null)
-      {
-        DrawRing(cameraRing);
-      }
     }
   }
 
   private void DrawRing(RingConfiguration ring)
   {
+    Vector3 up = useFollowNormal ? follow.transform.up : Vector3.up;
     Handles.color = ring.color;
-    Vector3 position = follow.transform.position + (follow.transform.up * ring.height);
-    Handles.DrawWireDisc(position, follow.transform.up, ring.radius);
+    Vector3 position = follow.transform.position + (up * ring.height);
+    Handles.DrawWireDisc(position, up, ring.radius);
   }
 }
