@@ -27,7 +27,9 @@ Attach the ThirdPersonCamera script to your camera and tune the attributes to yo
 
 The camera uses three different orbits to position itself around the follow target. Each orbit can be configured regarding his height, radius and color in the editor through the inspector:
 
-![Ring configuration](./Assets/Docs/ring-configuration.png)
+<p align="center">
+  <img src="./Assets/Docs/ring-configuration.png" alt="Ring configuration"/>
+</p>
 
 The height is relative to the transform of the follow target.
 
@@ -35,7 +37,9 @@ The camera circles around the target with a radius that is equal to the quadract
 
 The resulting rings are shwon in the editor like so:
 
-![Rings shown in editor](./Assets/Docs/orbits.png)
+<p align="center">
+  <img src="./Assets/Docs/orbits.png" alt="Rings shown in editor"/>
+</p>
 
 ## Positioning
 
@@ -46,5 +50,6 @@ The position of the camera can be further adjusted with the following attributes
 * Horizontal Tilt: the horizontal angle view offset for the camera. Defaults to 0.
 * Vertical Tilt: the vertical angle view offset for the camera. Defaults to 0.
 * Use Follow Normal: if enabled, the camera will align its normal with the follow target's normal. Defaults to true.
-
-![Positioning settings](./Assets/Docs/positioning-settings.png)
+<p align="center">
+  <img src="./Assets/Docs/positioning-settings.png" alt="Positioning settings"/>
+</p>
