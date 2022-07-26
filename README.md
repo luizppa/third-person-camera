@@ -13,7 +13,7 @@ Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinema
       - [Avoid Clipping](#avoid-clipping)
       - [Clipping offset](#clipping-offset)
       - [Camera Tilt](#camera-tilt)
-      - [Use Follow Normal](#use-follow-normal)
+      - [Use Target Normal](#use-target-normal)
     - [Controls](#controls)
   - [Contributing](#contributing)
 
@@ -71,7 +71,7 @@ The distance between the camera and any clipping object if "avoid clipping" is e
 
 The horizontal and vertical offset angles for the camera view. Both defaults to 0.
 
-#### Use Follow Normal
+#### Use Target Normal
 
 If enabled, the camera will align its normal with the follow target's normal, otherwise it will use  [Vector3.up](https://docs.unity3d.com/ScriptReference/Vector3-up.html), defined by (0, 1, 0), as shown bellow (true on the left, false on the right). Defaults to true.
   
