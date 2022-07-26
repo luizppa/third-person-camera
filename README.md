@@ -5,13 +5,9 @@ Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinema
 - [🎥 Unity Third Person Camera](#-unity-third-person-camera)
   - [👾 Usage](#-usage)
   - [✨ Features](#-features)
-    - [Orbits](#orbits)
-    - [Positioning](#positioning)
-      - [Avoid Clipping](#avoid-clipping)
-      - [Clipping offset](#clipping-offset)
-      - [Camera Tilt](#camera-tilt)
-      - [Use Target Normal](#use-target-normal)
-    - [Controls](#controls)
+    - [🪐 Orbits](#-orbits)
+    - [📌 Positioning](#-positioning)
+    - [🎮 Controls](#-controls)
   - [🐞 Contributing](#-contributing)
 
 ## 👾 Usage
@@ -22,11 +18,13 @@ Paste the [ShowIfAttributeDrawer.cs](./Assets/Editor/ShowIfAttributeDrawer.cs) s
 
 Attach the ThirdPersonCamera script to your camera and tune the attributes to your needs. Bind the Game Object which the camera should follow to the `follow` property. Bind the Game Object which the camera should look at to the `lookAt` property.
 
-> Note: the camera should not be nested in the `lookAt` nor the `follow` Game Objects.
+> Note: the camera should not be nested in the `lookAt` nor the `follow` game objects.
 
 ## ✨ Features
 
-### Orbits
+Most features are similar to the original Cinemachine scripts. The only difference is that the camera plane may be aligned with the target's normal. Basic settings can be configured in the inspector to your liking.
+
+### 🪐 Orbits
 
 The camera uses three different orbits to position itself around the follow target. Each orbit can be configured regarding his height, radius and color in the editor through the inspector:
 
@@ -44,46 +42,42 @@ The resulting rings are shwon in the editor like so:
   <img src="./Assets/Docs/orbits.png" alt="Rings shown in editor"/>
 </p>
 
-### Positioning
+### 📌 Positioning
 
 The position of the camera can be further adjusted with the following attributes:
 
-<p align="center">
-  <img src="./Assets/Docs/positioning-settings.png" alt="Positioning settings"/>
-</p>
+| Attribute           |type     | Default value  | Description                                                                                          |
+|---------------------|---------|----------------|------------------------------------------------------------------------------------------------------|
+| `avoidClipping`     | boolean | `true`         | Defines whether the camera should avoid clipping into objects, see the example below                 |
+| `clippingOffset`    | float   | 0              | The distance between the camera and any clipping objects if "avoidClipping" is enabled               |
+| `horizontalTilt`    | float   | 0              | The horizontal angle offset for the camera view                                                      |
+| `verticalTilt`      | float   | 0              | The vertical angle offset for the camera view                                                        |
+| `useTargetNormal`   | boolean | `true`         | If enabled, the camera will align its normal with the follow target's normal, see the example below  |
 
-#### Avoid Clipping
-
-If enabled, the camera will try to avoid clipping with the ground and other surrouding objects (as long as they have a collider), as shown bellow (true on the left, false on the right). Defaults to true.
+If `avoidClipping` is enabled, the camera will try to avoid clipping into the ground and other surrouding objects (as long as they have a collider) by moving closer to the follow target. An offset can be applied to move the camera further away from the clipping objects, which can help avoid seeing through objects, however it currently may lead to some glitches regarding the camera position. The following gif illustrates this behavior (true on the left, false on the right).
   
 <p align="center">
   <img src="./Assets/Docs/no-clipping.gif" alt="No camera clipping gif" width="45%">
   <img src="./Assets/Docs/clipping.gif" alt="Camera clipping gif" width="45%">
 </p>
 
-#### Clipping offset
-
-The distance between the camera and any clipping object if "avoid clipping" is enabled, defaults to 0.
-#### Camera Tilt
-
-The horizontal and vertical offset angles for the camera view. Both defaults to 0.
-
-#### Use Target Normal
-
-If enabled, the camera will align its normal with the follow target's normal, otherwise it will use  [Vector3.up](https://docs.unity3d.com/ScriptReference/Vector3-up.html), defined by (0, 1, 0), as shown bellow (true on the left, false on the right). Defaults to true.
+If `useTargetNormal` is enabled, the camera will align it's normal to the follow target's normal, otherwise it will use [Vector3.up](https://docs.unity3d.com/ScriptReference/Vector3-up.html), defined by (0, 1, 0), as shown below (true on the left, false on the right).
   
 <p align="center">
   <img src="./Assets/Docs/use-target-normal.gif" alt="Using target normal" width="45%">
   <img src="./Assets/Docs/use-world-normal.gif" alt="Using world normal" width="45%">
 </p>
 
-### Controls
+### 🎮 Controls
 
-The available control settings are relative to the camera movement axis inputs, horizontal and vertical sensitivity, and axis invertion. The defaults are:
-
-<p align="center">
-  <img src="./Assets/Docs/controls-settings.png" alt="Controls"/>
-</p>
+| Attribute               |type     | Default value  | Description                                                           |
+|-------------------------|---------|----------------|-----------------------------------------------------------------------|
+| `horizontalAxis`        | string  | `"Mouse X"`    | Defines the input axis used for the hotizontal movement of the camera |
+| `horizontalSensitivity` | float   | 1              | The multiplier for the horizontal input value                         |
+| `invertX`               | boolean | `false`        | Defines whether the horizontal movement should be inverted            |
+| `verticalAxis`          | string  | `"Mouse Y"`    | Defines the input axis used for the vertical movement of the camera   |
+| `verticalSensitivity`   | float   | 0.8            | The multiplier for the vertical input value                           |
+| `invertY`               | boolean | `true`         | Defines whether the vertical movement should be inverted              |
 
 ## 🐞 Contributing
 
