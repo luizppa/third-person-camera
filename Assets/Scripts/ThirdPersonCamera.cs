@@ -34,16 +34,16 @@ public class ThirdPersonCamera : MonoBehaviour
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
   [SerializeField][Range(-180, 180)] float horizontalTilt = 0f;
   [SerializeField][Range(-180, 180)] float verticalTilt = 0f;
-  [SerializeField] bool useFollowNormal = true;
+  [SerializeField] bool useTargetNormal = true;
 
   [Header("Controls")]
   [Header("X axis")]
   [SerializeField] string horizontalAxis = "Mouse X";
-  [SerializeField] float horizontalSensibility = 1f;
+  [SerializeField] float horizontalSensitivity = 1f;
   [SerializeField] bool invertX = false;
   [Header("Y axis")]
   [SerializeField] string verticalAxis = "Mouse Y";
-  [SerializeField] float verticalSensibility = 1f;
+  [SerializeField] float verticalSensitivity = 0.8f;
   [SerializeField] bool invertY = true;
 
   [Header("Editor Settings")]
@@ -80,9 +80,9 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void SetNormalVectors()
   {
-    up = useFollowNormal ? follow.transform.up : Vector3.up;
-    right = useFollowNormal ? follow.transform.right : Vector3.right;
-    forward = useFollowNormal ? follow.transform.forward : Vector3.forward;
+    up = useTargetNormal ? follow.transform.up : Vector3.up;
+    right = useTargetNormal ? follow.transform.right : Vector3.right;
+    forward = useTargetNormal ? follow.transform.forward : Vector3.forward;
   }
 
   private void SetPosition()
@@ -117,13 +117,14 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void LookAt(Vector3 normal, Transform lookAt)
   {
-    transform.localRotation = Quaternion.LookRotation((lookAt.position - transform.position).normalized, normal);
+    Vector3 targetDirection = (lookAt.position - transform.position).normalized;
+    transform.localRotation = Quaternion.LookRotation(targetDirection, normal);
   }
 
   private void ReadInputs()
   {
-    referenceHeight += Input.GetAxis(verticalAxis) * verticalSensibility * (invertY ? -1 : 1);
-    cameraTranslation += Input.GetAxis(horizontalAxis) * verticalMultiplier * horizontalSensibility * (invertX ? -1 : 1);
+    referenceHeight += Input.GetAxis(verticalAxis) * verticalSensitivity * (invertY ? -1 : 1);
+    cameraTranslation += Input.GetAxis(horizontalAxis) * verticalMultiplier * horizontalSensitivity * (invertX ? -1 : 1);
 
     if (cameraTranslation > 360f)
     {
@@ -205,7 +206,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void DrawRing(RingConfiguration ring)
   {
-    Vector3 up = useFollowNormal ? follow.transform.up : Vector3.up;
+    Vector3 up = useTargetNormal ? follow.transform.up : Vector3.up;
     Handles.color = ring.color;
     Vector3 position = follow.transform.position + (up * ring.height);
     Handles.DrawWireDisc(position, up, ring.radius);
