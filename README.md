@@ -10,10 +10,10 @@ Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinema
   - [Features](#features)
     - [Orbits](#orbits)
     - [Positioning](#positioning)
-      - [**Avoid Clipping**](#avoid-clipping)
-      - [**Clipping offset**](#clipping-offset)
-      - [**Camera Tilt**](#camera-tilt)
-      - [**Use Follow Normal**](#use-follow-normal)
+      - [Avoid Clipping](#avoid-clipping)
+      - [Clipping offset](#clipping-offset)
+      - [Camera Tilt](#camera-tilt)
+      - [Use Follow Normal](#use-follow-normal)
     - [Controls](#controls)
   - [Contributing](#contributing)
 
@@ -55,7 +55,7 @@ The position of the camera can be further adjusted with the following attributes
   <img src="./Assets/Docs/positioning-settings.png" alt="Positioning settings"/>
 </p>
 
-#### **Avoid Clipping**
+#### Avoid Clipping
 
 If enabled, the camera will try to avoid clipping with the ground and other surrouding objects (as long as they have a collider), as shown bellow (true on the left, false on the right). Defaults to true.
   
@@ -64,16 +64,16 @@ If enabled, the camera will try to avoid clipping with the ground and other surr
   <img src="./Assets/Docs/clipping.gif" alt="Camera clipping gif" width="45%">
 </p>
 
-#### **Clipping offset**
+#### Clipping offset
 
 The distance between the camera and any clipping object if "avoid clipping" is enabled, defaults to 0.
-#### **Camera Tilt**
+#### Camera Tilt
 
 The horizontal and vertical offset angles for the camera view. Both defaults to 0.
 
-#### **Use Follow Normal**
+#### Use Follow Normal
 
-If enabled, the camera will align its normal with the follow target's normal, otherwise it will use  [Vector3.up](https://docs.unity3d.com/ScriptReference/Vector3-up.html), defined by (0, 1, 0), as shown bellow (true on the left, false on the right). On the left. Defaults to true.
+If enabled, the camera will align its normal with the follow target's normal, otherwise it will use  [Vector3.up](https://docs.unity3d.com/ScriptReference/Vector3-up.html), defined by (0, 1, 0), as shown bellow (true on the left, false on the right). Defaults to true.
   
 <p align="center">
   <img src="./Assets/Docs/use-target-normal.gif" alt="Using target normal" width="45%">
@@ -82,7 +82,7 @@ If enabled, the camera will align its normal with the follow target's normal, ot
 
 ### Controls
 
-The available control settings are relative to the camera movement axis inputs, horizontal and vertical sensitivity, and axis invertion.
+The available control settings are relative to the camera movement axis inputs, horizontal and vertical sensitivity, and axis invertion. The defaults are:
 
 <p align="center">
   <img src="./Assets/Docs/controls-settings.png" alt="Controls"/>
