@@ -1,13 +1,10 @@
-# Unity Third Person Camera
+# 🎥 Unity Third Person Camera
 
 Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinemachine](https://unity.com/unity/features/editor/art-and-design/cinemachine), the code is entirely mine with exception for for the [ShowIfAttribute](./Assets/Scripts/ShowIfAttribute.cs) and [ShowIfAttributeDrawer](./Assets/Editor/ShowIfAttributeDrawer.cs) scripts.  Although inspired by, it is much more simple (and depending on your necessities, much more limited) than the original Cinemachine scripts. It gives you, however, the possibility to align the normal of the camera plane with the target's normal.
 
-## Summary
-
-- [Unity Third Person Camera](#unity-third-person-camera)
-  - [Summary](#summary)
-  - [Usage](#usage)
-  - [Features](#features)
+- [🎥 Unity Third Person Camera](#-unity-third-person-camera)
+  - [👾 Usage](#-usage)
+  - [✨ Features](#-features)
     - [Orbits](#orbits)
     - [Positioning](#positioning)
       - [Avoid Clipping](#avoid-clipping)
@@ -15,9 +12,9 @@ Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinema
       - [Camera Tilt](#camera-tilt)
       - [Use Target Normal](#use-target-normal)
     - [Controls](#controls)
-  - [Contributing](#contributing)
+  - [🐞 Contributing](#-contributing)
 
-## Usage
+## 👾 Usage
 
 Paste the [ThirdPersonCamera.cs](./Assets/Scripts/ThirdPersonCamera.cs) and [ShowIfAttribute.cs](Assets/Scripts/ShowIfAttribute.cs) script into your project.
 
@@ -27,7 +24,7 @@ Attach the ThirdPersonCamera script to your camera and tune the attributes to yo
 
 > Note: the camera should not be nested in the `lookAt` nor the `follow` Game Objects.
 
-## Features
+## ✨ Features
 
 ### Orbits
 
@@ -88,6 +85,6 @@ The available control settings are relative to the camera movement axis inputs, 
   <img src="./Assets/Docs/controls-settings.png" alt="Controls"/>
 </p>
 
-## Contributing
+## 🐞 Contributing
 
 Bug reports, feature requests, suggestions (please [create an issue](https://github.com/luizppa/third-person-camera/issues/new)) and pull requests are welcome.
