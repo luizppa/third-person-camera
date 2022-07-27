@@ -51,6 +51,8 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] bool useTargetNormal = true;
 
   [Header("Controls")]
+  [SerializeField] bool captureCursor = false;
+
   [Header("X axis")]
   [SerializeField] string horizontalAxis = "Mouse X";
   [SerializeField] float horizontalSensitivity = 1f;
@@ -63,7 +65,7 @@ public class ThirdPersonCamera : MonoBehaviour
   [Header("Editor Settings")]
   [SerializeField] bool showGizmos = true;
 
-  private float cameraTranslation = 0f;
+  private float cameraTranslation = 90f;
   private float verticalMultiplier = 10f;
   private float referenceHeight = 0f;
   private float referenceDistance;
@@ -82,6 +84,10 @@ public class ThirdPersonCamera : MonoBehaviour
 
   void Update()
   {
+    if (captureCursor)
+    {
+      Cursor.lockState = CursorLockMode.Locked;
+    }
     SetNormalVectors();
     SetPosition();
     SetRotation();
@@ -89,7 +95,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void InitPosition()
   {
-    transform.position = follow.transform.position - (forward * middleRing.GetBorderDistanceToReference());
+    referenceHeight = middleRing.height;
   }
 
   private void SetNormalVectors()
