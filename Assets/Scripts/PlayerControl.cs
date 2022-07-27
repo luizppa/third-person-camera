@@ -6,6 +6,7 @@ public class PlayerControl : MonoBehaviour
 {
   [SerializeField] Camera gameCamera = null;
   [SerializeField] float moveSpeed = 1f;
+  [SerializeField] float runSpeed = 1.5f;
 
   private Rigidbody rb = null;
 
@@ -57,6 +58,10 @@ public class PlayerControl : MonoBehaviour
 
   private float GetMoveSpeed()
   {
+    if (Input.GetKey(KeyCode.LeftShift))
+    {
+      return runSpeed;
+    }
     return moveSpeed;
   }
 }
