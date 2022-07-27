@@ -81,8 +81,8 @@ public class ThirdPersonCamera : MonoBehaviour
   private void SetNormalVectors()
   {
     up = useTargetNormal ? follow.transform.up : Vector3.up;
-    right = useTargetNormal ? follow.transform.right : Vector3.right;
-    forward = useTargetNormal ? follow.transform.forward : Vector3.forward;
+    right = Vector3.right;
+    forward = Vector3.forward;
   }
 
   private void SetPosition()
