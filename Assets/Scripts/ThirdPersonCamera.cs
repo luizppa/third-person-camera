@@ -62,6 +62,14 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] float verticalSensitivity = 0.8f;
   [SerializeField] bool invertY = true;
 
+  [Header("Effects")]
+  [SerializeField] bool zoomOutOnHighSpeed = true;
+  [ShowIf(nameof(zoomOutOnHighSpeed))][SerializeField] float zoomOutStartSpeed = 10f;
+  [ShowIf(nameof(zoomOutOnHighSpeed))][SerializeField] float zoomOutCapSpeed = 15f;
+  [ShowIf(nameof(zoomOutOnHighSpeed))][SerializeField] float zoomStartDistanceRatio = 0.1f;
+  [ShowIf(nameof(zoomOutOnHighSpeed))][SerializeField] float zoomCapDistanceRatio = 0.3f;
+
+
   [Header("Editor Settings")]
   [SerializeField] bool showGizmos = true;
 
@@ -115,6 +123,7 @@ public class ThirdPersonCamera : MonoBehaviour
     referenceHeight = cameraRing.height;
     float distance = cameraRing.GetBorderDistanceToReference();
     referenceDistance = Mathf.Sqrt((distance * distance) - (referenceHeight * referenceHeight));
+    referenceDistance = ApplyDistanceEffects(referenceDistance);
     CorrectClipping(distance);
 
     Vector3 heightVector = up * (avoidClipping ? noClippingHeight : referenceHeight);
@@ -174,6 +183,27 @@ public class ThirdPersonCamera : MonoBehaviour
     {
       noClippingHeight = referenceHeight;
       noClippingDistance = referenceDistance;
+    }
+  }
+
+  private float ApplyDistanceEffects(float distance)
+  {
+    if (zoomOutOnHighSpeed)
+    {
+      Rigidbody rb = follow.GetComponent<Rigidbody>();
+      if (rb == null)
+      {
+        return distance;
+      }
+      float speed = follow.GetComponent<Rigidbody>().velocity.magnitude;
+      Debug.Log(speed);
+      float speedRatio = Mathf.Clamp01((speed - zoomOutStartSpeed) / (zoomOutCapSpeed - zoomOutStartSpeed));
+      float distanceIncrease = Mathf.Lerp(zoomStartDistanceRatio, zoomCapDistanceRatio, speedRatio);
+      return distance += (distanceIncrease * distance);
+    }
+    else
+    {
+      return distance;
     }
   }
 

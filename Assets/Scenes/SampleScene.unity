@@ -908,6 +908,11 @@ MonoBehaviour:
   verticalAxis: Mouse Y
   verticalSensitivity: 0.8
   invertY: 1
+  zoomOutOnHighSpeed: 1
+  zoomOutStartSpeed: 10
+  zoomOutCapSpeed: 15
+  zoomStartDistanceRatio: 0.1
+  zoomCapDistanceRatio: 0.3
   showGizmos: 1
 --- !u!1 &1262751116
 GameObject:
