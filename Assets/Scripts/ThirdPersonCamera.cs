@@ -11,6 +11,20 @@ public class RingConfiguration
   public float height = 2.5f;
   public Color color = Color.red;
 
+  public RingConfiguration(float radius, float height, Color color)
+  {
+    this.radius = radius;
+    this.height = height;
+    this.color = color;
+  }
+
+  public RingConfiguration(float radius, float height)
+  {
+    this.radius = radius;
+    this.height = height;
+    this.color = Color.green;
+  }
+
   public float GetBorderDistanceToReference()
   {
     return Mathf.Sqrt((radius * radius) + (height * height));
@@ -25,9 +39,9 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] GameObject lookAt = null;
 
   [Header("Orbits")]
-  [SerializeField] RingConfiguration topRing = new RingConfiguration { radius = 2f, height = 1.4f, color = Color.red };
-  [SerializeField] RingConfiguration middleRing = new RingConfiguration { radius = 0.5f, height = 3f, color = Color.red };
-  [SerializeField] RingConfiguration bottomRing = new RingConfiguration { radius = 1f, height = -1f, color = Color.red };
+  [SerializeField] RingConfiguration topRing = new RingConfiguration(2f, 1.4f, Color.red);
+  [SerializeField] RingConfiguration middleRing = new RingConfiguration(5f, 3f, Color.red);
+  [SerializeField] RingConfiguration bottomRing = new RingConfiguration(1f, -1f, Color.red);
 
   [Header("Positioning")]
   [SerializeField] bool avoidClipping = true;
@@ -176,21 +190,21 @@ public class ThirdPersonCamera : MonoBehaviour
   {
     if (referenceHeight >= topRing.height)
     {
-      return new RingConfiguration { radius = topRing.radius, height = topRing.height, color = Color.green };
+      return new RingConfiguration(topRing.radius, topRing.height);
     }
     else if (referenceHeight >= middleRing.height)
     {
       float radius = EaseLerpRingRadius(middleRing, topRing);
-      return new RingConfiguration { radius = radius, height = referenceHeight, color = Color.green };
+      return new RingConfiguration(radius, referenceHeight);
     }
     else if (referenceHeight >= bottomRing.height)
     {
       float radius = EaseLerpRingRadius(bottomRing, middleRing);
-      return new RingConfiguration { radius = radius, height = referenceHeight, color = Color.green };
+      return new RingConfiguration(radius, referenceHeight);
     }
     else
     {
-      return new RingConfiguration { radius = bottomRing.radius, height = bottomRing.height, color = Color.green };
+      return new RingConfiguration(bottomRing.radius, bottomRing.height);
     }
   }
 
