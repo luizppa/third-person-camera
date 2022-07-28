@@ -86,7 +86,6 @@ public class ThirdPersonCamera : MonoBehaviour
 
   void Start()
   {
-    SetNormalVectors();
     InitPosition();
   }
 
@@ -109,8 +108,8 @@ public class ThirdPersonCamera : MonoBehaviour
   private void SetNormalVectors()
   {
     up = useTargetNormal ? follow.transform.up : Vector3.up;
-    right = Vector3.right;
-    forward = Vector3.forward;
+    right = Vector3.Cross(up, Vector3.right);
+    forward = Vector3.Cross(up, right);
   }
 
   private void SetPosition()
@@ -127,7 +126,7 @@ public class ThirdPersonCamera : MonoBehaviour
     CorrectClipping(distance);
 
     Vector3 heightVector = up * (avoidClipping ? noClippingHeight : referenceHeight);
-    Vector3 distanceVector = forward * (avoidClipping ? noClippingDistance : referenceDistance);
+    Vector3 distanceVector = -forward * (avoidClipping ? noClippingDistance : referenceDistance);
 
     transform.position = follow.transform.position + heightVector + distanceVector;
     transform.RotateAround(follow.transform.position, up, cameraTranslation);
