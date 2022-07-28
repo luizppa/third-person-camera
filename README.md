@@ -4,10 +4,12 @@ Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinema
 
 - [🎥 Unity Third Person Camera](#-unity-third-person-camera)
   - [👾 Usage](#-usage)
-  - [✨ Features](#-features)
+  - [🧩 Features](#-features)
     - [🪐 Orbits](#-orbits)
     - [📌 Positioning](#-positioning)
     - [🎮 Controls](#-controls)
+    - [✨ Effects](#-effects)
+      - [Zoom out on motion](#zoom-out-on-motion)
   - [🐞 Contributing](#-contributing)
 
 ## 👾 Usage
@@ -20,7 +22,7 @@ Attach the ThirdPersonCamera script to your camera and tune the attributes to yo
 
 > Note: the camera should not be nested in the `lookAt` nor the `follow` game objects.
 
-## ✨ Features
+## 🧩 Features
 
 Most features are similar to the original Cinemachine scripts. The only difference is that the camera plane may be aligned with the target's normal. Basic settings can be configured in the inspector to your liking.
 
@@ -78,6 +80,43 @@ If `useTargetNormal` is enabled, the camera will align it's normal to the follow
 | `verticalAxis`          | string  | `"Mouse Y"`    | Defines the input axis used for the vertical movement of the camera   |
 | `verticalSensitivity`   | float   | 0.8            | The multiplier for the vertical input value                           |
 | `invertY`               | boolean | `true`         | Defines whether the vertical movement should be inverted              |
+
+### ✨ Effects
+
+A few motion effects are available out of the box. Each can be enabled/disabled and configured as you wish. The effects and configurations avaliable are:
+
+> Although I described this section as available effects (plural), as it is, the only one available is zoom out on motion. I expect to implement more effects in the future, like camera shake. For the time beeing, feel free to contribute!
+
+---
+
+#### Zoom out on motion
+
+**Note: This effect depends on the target having a rigidbody attached to it**.
+
+The zoom out on motion effect is a simple way to make the camera zoom out on the target when the target is moving at certain speeds. This can help giving a sense of depth and speed to the motion. The configurations for this effect are:
+
+| Attribute                |type     | Default value  | Description                                                           |
+|--------------------------|---------|----------------|-----------------------------------------------------------------------|
+| `zoomOutStartSpeed`      | float   | 10             | At which speed (in m/s) should the camera begin to zoom out           |
+| `zoomOutCapSpeed`        | float   | 15             | At which speed (in m/s) should the camera stop to zoom out            |
+| `zoomStartDistanceRatio` | float   | 0.1            | How much should the camera zoom out (in %) when it starts to move     |
+| `zoomCapDistanceRatio`   | float   | 0.3            | How much should the camera zoom out (in %) when it stops to move      |
+
+The effect is done by increasing the camera and the target by a certain amount, this amount is determined by a linear interpolation of the `zoomStartDistanceRatio` and `zoomCapDistanceRatio` with a value equals to the inverse linear interpolation of the target's speed between `zoomOutStartSpeed` and `zoomCapDistanceRatio`.
+
+For example, suppose we are using the default configurations. If the target is below 10 m/s, the camera will be at it's default distance, as the target increases it's speed beyond 10 m/s, the camera will start to zoom out. At a speed of 12.5 m/s, the inverse linear interpolation value will be 0.5, so the camera will zoom out by a value equals the linear interpolation of the speed at 0.5, that is, 0.2, the equation is:
+
+```
+(v * zoomStartDistanceRatio) + ((1 - v) * zoomCapDistanceRatio)
+```
+
+with `v = 0.5`. The zoom out amount is represented by the percentage of the default distance that will be added, therefore the camera will zoom out by 20% of the default distance (120% in total).
+
+The result can be seen in the following gif:
+
+<p align="center">
+  <img src="./Assets/Docs/zoom-out-effect.gif" alt="Zoom out on motion gif" width="65%">
+</p>
 
 ## 🐞 Contributing
 
