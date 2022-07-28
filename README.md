@@ -110,7 +110,7 @@ For example, suppose we are using the default configurations. If the target is b
 (v * zoomStartDistanceRatio) + ((1 - v) * zoomCapDistanceRatio)
 ```
 
-with `v = 0.5`. The zoom out amount is represented by the percentage of the default distance that will be added, therefore the camera will zoom out by 20% of the default distance (120% in total).
+with `v = 0.5`. The zoom out amount is represented by the percentage of the default distance that will be added, therefore the camera will zoom out by 20% of the default distance (120% in total). Past the cap speed of 15 m/s, the camera will always be zoomed out by 30%.
 
 The result can be seen in the following gif:
 
