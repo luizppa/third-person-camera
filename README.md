@@ -48,7 +48,7 @@ The resulting rings are shwon in the editor like so:
 
 The position of the camera can be further adjusted with the following attributes:
 
-| Attribute           |type     | Default value  | Description                                                                                          |
+| Attribute           | Type    | Default value  | Description                                                                                          |
 |---------------------|---------|----------------|------------------------------------------------------------------------------------------------------|
 | `avoidClipping`     | boolean | `true`         | Defines whether the camera should avoid clipping into objects, see the example below                 |
 | `clippingOffset`    | float   | 0              | The distance between the camera and any clipping objects if "avoidClipping" is enabled               |
@@ -72,7 +72,7 @@ If `useTargetNormal` is enabled, the camera will align it's normal to the follow
 
 ### 🎮 Controls
 
-| Attribute               |type     | Default value  | Description                                                           |
+| Attribute               | Type    | Default value  | Description                                                           |
 |-------------------------|---------|----------------|-----------------------------------------------------------------------|
 | `horizontalAxis`        | string  | `"Mouse X"`    | Defines the input axis used for the hotizontal movement of the camera |
 | `horizontalSensitivity` | float   | 1              | The multiplier for the horizontal input value                         |
@@ -95,7 +95,7 @@ A few motion effects are available out of the box. Each can be enabled/disabled 
 
 The zoom out on motion effect is a simple way to make the camera zoom out on the target when the target is moving at certain speeds. This can help giving a sense of depth and speed to the motion. The configurations for this effect are:
 
-| Attribute                |type     | Default value  | Description                                                           |
+| Attribute                | Type    | Default value  | Description                                                           |
 |--------------------------|---------|----------------|-----------------------------------------------------------------------|
 | `zoomOutStartSpeed`      | float   | 10             | At which speed (in m/s) should the camera begin to zoom out           |
 | `zoomOutCapSpeed`        | float   | 15             | At which speed (in m/s) should the camera stop to zoom out            |
