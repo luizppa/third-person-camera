@@ -63,11 +63,11 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] bool invertY = true;
 
   [Header("Effects")]
-  [SerializeField] bool zoomOutOnHighSpeed = true;
-  [ShowIf(nameof(zoomOutOnHighSpeed))][SerializeField] float zoomOutStartSpeed = 10f;
-  [ShowIf(nameof(zoomOutOnHighSpeed))][SerializeField] float zoomOutCapSpeed = 15f;
-  [ShowIf(nameof(zoomOutOnHighSpeed))][SerializeField] float zoomStartDistanceRatio = 0.1f;
-  [ShowIf(nameof(zoomOutOnHighSpeed))][SerializeField] float zoomCapDistanceRatio = 0.3f;
+  [SerializeField] bool zoomOutOnMotion = true;
+  [ShowIf(nameof(zoomOutOnMotion))][SerializeField] float zoomOutStartSpeed = 10f;
+  [ShowIf(nameof(zoomOutOnMotion))][SerializeField] float zoomOutCapSpeed = 15f;
+  [ShowIf(nameof(zoomOutOnMotion))][SerializeField] float zoomStartDistanceRatio = 0.1f;
+  [ShowIf(nameof(zoomOutOnMotion))][SerializeField] float zoomCapDistanceRatio = 0.3f;
 
 
   [Header("Editor Settings")]
@@ -187,7 +187,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private float ApplyDistanceEffects(float distance)
   {
-    if (zoomOutOnHighSpeed)
+    if (zoomOutOnMotion)
     {
       Rigidbody rb = follow.GetComponent<Rigidbody>();
       if (rb == null)
