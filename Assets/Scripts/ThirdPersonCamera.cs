@@ -195,7 +195,6 @@ public class ThirdPersonCamera : MonoBehaviour
         return distance;
       }
       float speed = follow.GetComponent<Rigidbody>().velocity.magnitude;
-      Debug.Log(speed);
       float speedRatio = Mathf.Clamp01((speed - zoomOutStartSpeed) / (zoomOutCapSpeed - zoomOutStartSpeed));
       float distanceIncrease = Mathf.Lerp(zoomStartDistanceRatio, zoomCapDistanceRatio, speedRatio);
       return distance += (distanceIncrease * distance);
