@@ -48,6 +48,20 @@ public class ZoomOutOnMotionEffect
   public float capSpeed = 15f;
   public float startDistanceRatio = 0.1f;
   public float capDistanceRatio = 0.3f;
+
+  public float GetDistanceIncreaseForSpeed(float speed)
+  {
+    if (enabled)
+    {
+      float speedRatio = Mathf.Clamp01((speed - startSpeed) / (capSpeed - startSpeed));
+      float distanceIncrease = 1 + Mathf.Lerp(startDistanceRatio, capDistanceRatio, speedRatio);
+      return distanceIncrease;
+    }
+    else
+    {
+      return 1f;
+    }
+  }
 }
 
 [Serializable]
@@ -228,7 +242,7 @@ public class ThirdPersonCamera : MonoBehaviour
     referenceHeight = cameraRing.height;
     float distance = cameraRing.GetBorderDistanceToReference();
     referenceDistance = Mathf.Sqrt((distance * distance) - (referenceHeight * referenceHeight));
-    referenceDistance = ApplyDistanceEffects(referenceDistance);
+    referenceDistance = ApplyZoomOutOnMotion(referenceDistance);
     CorrectClipping(distance);
 
     Vector3 heightVector = up * (avoidClipping ? noClippingHeight : referenceHeight);
@@ -350,19 +364,14 @@ public class ThirdPersonCamera : MonoBehaviour
   // ===================== Effects ===================== //
   #region Effects Methods
 
-  private float ApplyDistanceEffects(float distance)
+  private float ApplyZoomOutOnMotion(float distance)
   {
-    if (zoomOutOnMotion.enabled)
+    Rigidbody rb = follow.GetComponent<Rigidbody>();
+    if (rb != null)
     {
-      Rigidbody rb = follow.GetComponent<Rigidbody>();
-      if (rb == null)
-      {
-        return distance;
-      }
       float speed = follow.GetComponent<Rigidbody>().velocity.magnitude;
-      float speedRatio = Mathf.Clamp01((speed - zoomOutOnMotion.startSpeed) / (zoomOutOnMotion.capSpeed - zoomOutOnMotion.startSpeed));
-      float distanceIncrease = Mathf.Lerp(zoomOutOnMotion.startDistanceRatio, zoomOutOnMotion.capDistanceRatio, speedRatio);
-      return distance += (distanceIncrease * distance);
+      float distanceIncrease = zoomOutOnMotion.GetDistanceIncreaseForSpeed(speed);
+      return distanceIncrease * distance;
     }
     else
     {
