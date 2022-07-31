@@ -128,7 +128,7 @@ The motion shake effect is a way to make the motion feel more natural and dynami
 | Attribute                  | Type    | Default value  | Description                                                                   |
 |----------------------------|---------|----------------|-------------------------------------------------------------------------------|
 | `startSpeed`               | float   | 10             | At which speed (in m/s) should the camera begin to shake                      |
-| `capSpeed`                 | float   | 15             | At which speed (in m/s) should the camera stop to shake                       |
+| `capSpeed`                 | float   | 15             | Until which speed (in m/s) should the camera increase the shake intensity     |
 | `verticalStartIntensity`   | float   | 0.02           | How much should the camera move vertically as it starts to shake              |
 | `verticalCapIntensity`     | float   | 0.05           | How much should the camera move vertically at most as it shakes               |
 | `verticalSpeed`            | float   | 15             | How fast should the camera move vertically as it shakes (cycles per second)   |
