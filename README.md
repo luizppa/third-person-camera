@@ -10,6 +10,7 @@ Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinema
     - [🎮 Controls](#-controls)
     - [✨ Effects](#-effects)
       - [Zoom out on motion](#zoom-out-on-motion)
+      - [Motion shake](#motion-shake)
   - [🐞 Contributing](#-contributing)
 
 ## 👾 Usage
@@ -85,7 +86,7 @@ If `useTargetNormal` is enabled, the camera will align it's normal to the follow
 
 A few motion effects are available out of the box. Each can be enabled/disabled and configured as you wish. The effects and configurations avaliable are:
 
-> Although I described this section as available effects (plural), as it is, the only effect available is zoom out on motion. I expect to implement more in the future, like camera shake. For the time beeing, feel free to contribute!
+> Although I described this section as available effects (plural), as it is, there are only two effects available, zoom out on motion and motion shake. I expect to implement more in the future, for the time beeing, feel free to contribute!
 
 ---
 
@@ -95,12 +96,12 @@ A few motion effects are available out of the box. Each can be enabled/disabled 
 
 The zoom out on motion effect is a simple way to make the camera zoom out on the target when the target is moving at certain speeds. This can help giving a sense of depth and speed to the motion. The configurations for this effect are:
 
-| Attribute                | Type    | Default value  | Description                                                           |
-|--------------------------|---------|----------------|-----------------------------------------------------------------------|
-| `zoomOutStartSpeed`      | float   | 10             | At which speed (in m/s) should the camera begin to zoom out           |
-| `zoomOutCapSpeed`        | float   | 15             | At which speed (in m/s) should the camera stop to zoom out            |
-| `zoomStartDistanceRatio` | float   | 0.1            | How much should the camera zoom out (in %) when it starts to move     |
-| `zoomCapDistanceRatio`   | float   | 0.3            | How much should the camera zoom out (in %) when it stops to move      |
+| Attribute            | Type    | Default value  | Description                                                       |
+|----------------------|---------|----------------|-------------------------------------------------------------------|
+| `startSpeed`         | float   | 10             | At which speed (in m/s) should the camera begin to zoom out       |
+| `capSpeed`           | float   | 15             | At which speed (in m/s) should the camera stop to zoom out        |
+| `startDistanceRatio` | float   | 0.1            | How much should the camera zoom out (in %) when it starts to move |
+| `capDistanceRatio`   | float   | 0.3            | How much should the camera zoom out (in %) when it stops to move  |
 
 The effect is done by increasing the camera and the target by a certain amount, this amount is determined by a linear interpolation of the `zoomStartDistanceRatio` and `zoomCapDistanceRatio` with a value equals to the inverse linear interpolation of the target's speed between `zoomOutStartSpeed` and `zoomCapDistanceRatio`.
 
@@ -117,6 +118,27 @@ The result can be seen in the following gif:
 <p align="center">
   <img src="./Assets/Docs/zoom-out-effect.gif" alt="Zoom out on motion gif" width="65%">
 </p>
+
+#### Motion shake
+
+**Note: This effect depends on the target having a rigidbody attached to it**.
+
+The motion shake effect is a way to make the motion feel more natural and dynamic. The configurations for this effect are:
+
+| Attribute                  | Type    | Default value  | Description                                                                   |
+|----------------------------|---------|----------------|-------------------------------------------------------------------------------|
+| `startSpeed`               | float   | 10             | At which speed (in m/s) should the camera begin to shake                      |
+| `capSpeed`                 | float   | 15             | At which speed (in m/s) should the camera stop to shake                       |
+| `verticalStartIntensity`   | float   | 0.02           | How much should the camera move vertically as it starts to shake              |
+| `verticalCapIntensity`     | float   | 0.05           | How much should the camera move vertically at most as it shakes               |
+| `verticalSpeed`            | float   | 15             | How fast should the camera move vertically as it shakes (cycles per second)   |
+| `verticalPhase`            | float   | 0.5            | At which point of the cycle should the camera start (vertically)              |
+| `horizontalStartIntensity` | float   | 0.03           | How much should the camera move horizontally as it starts to shake            |
+| `horizontalCapIntensity`   | float   | 0.07           | How much should the camera move horizontally at most as it shakes             |
+| `horizontalSpeed`          | float   | 7.5            | How fast should the camera move horizontally as it shakes (cycles per second) |
+| `horizontalPhase`          | float   | 0              | At which point of the cycle should the camera start (horizontally)            |
+
+This effect is done by using a sinusoidal wave to move the camera vertically and horizontally. The vertical wave is a sinusoidal wave with a frequency of `verticalSpeed` and a phase of `verticalPhase`. The horizontal wave is a sinusoidal wave with a frequency of `horizontalSpeed` and a phase of `horizontalPhase`.
 
 ## 🐞 Contributing
 
