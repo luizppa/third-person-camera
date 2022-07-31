@@ -51,9 +51,9 @@ public class ZoomOutOnMotionEffect
 
   public float GetDistanceIncreaseForSpeed(float speed)
   {
-    if (enabled)
+    if (enabled && speed >= startSpeed)
     {
-      float speedRatio = Mathf.Clamp01((speed - startSpeed) / (capSpeed - startSpeed));
+      float speedRatio = Mathf.InverseLerp(startSpeed, capSpeed, speed);
       float distanceIncrease = 1 + Mathf.Lerp(startDistanceRatio, capDistanceRatio, speedRatio);
       return distanceIncrease;
     }
