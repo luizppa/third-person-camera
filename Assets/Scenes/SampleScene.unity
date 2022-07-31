@@ -863,7 +863,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.071212836, y: -0.7035118, z: 0.071212836, w: 0.7035117}
-  m_LocalPosition: {x: 7.2806025, y: 2.1, z: -10.645446}
+  m_LocalPosition: {x: 7.2806025, y: 1.9, z: -9.145446}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -900,8 +900,6 @@ MonoBehaviour:
   clippingOffset: 0
   horizontalTilt: 0
   verticalTilt: 0
-  horizontalOffset: 1.5
-  verticalOffset: 0.2
   useTargetNormal: 1
   captureCursor: 1
   horizontalAxis: Mouse X
@@ -916,6 +914,15 @@ MonoBehaviour:
     capSpeed: 15
     startDistanceRatio: 0.1
     capDistanceRatio: 0.3
+  motionShake:
+    enabled: 1
+    startSpeed: 10
+    verticalIntensity: 0.05
+    verticalSpeed: 15
+    verticalPhase: 0.5
+    horizontalIntensity: 0.07
+    horizontalSpeed: 7.5
+    horizontalPhase: 0
   showGizmos: 1
 --- !u!1 &1262751116
 GameObject:

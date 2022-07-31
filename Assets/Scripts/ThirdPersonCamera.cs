@@ -41,6 +41,54 @@ public class ZoomOutOnMotionConfig
   public float capDistanceRatio = 0.3f;
 }
 
+[Serializable]
+public class MotionShakeConfig
+{
+  public bool enabled = true;
+  public float startSpeed = 10f;
+  public float verticalIntensity = 0.05f;
+  public float verticalSpeed = 15f;
+  [Range(0, 1)] public float verticalPhase = 0.5f;
+  public float horizontalIntensity = 0.07f;
+  public float horizontalSpeed = 7.5f;
+  [Range(0, 1)] public float horizontalPhase = 0f;
+
+  private float phase = 0f;
+  private bool running = false;
+
+  public Vector3 Update(float speed, float deltaTime)
+  {
+    if (speed >= startSpeed)
+    {
+      if (!running)
+      {
+        Start();
+      }
+      phase += deltaTime;
+      float horizontal = Mathf.Sin((Time.time * horizontalSpeed) + horizontalPhase) * horizontalIntensity;
+      float vertical = Mathf.Sin((Time.time * verticalSpeed) + verticalPhase) * verticalIntensity;
+      return new Vector3(horizontal, vertical, 0f);
+    }
+    else
+    {
+      Stop();
+      return Vector3.zero;
+    }
+  }
+
+  private void Start()
+  {
+    phase = 0f;
+    running = true;
+  }
+
+  private void Stop()
+  {
+    running = false;
+  }
+
+}
+
 [ExecuteInEditMode]
 public class ThirdPersonCamera : MonoBehaviour
 {
@@ -77,6 +125,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   [Header("Effects")]
   [SerializeField] ZoomOutOnMotionConfig zoomOutOnMotion = new ZoomOutOnMotionConfig();
+  [SerializeField] MotionShakeConfig motionShake = new MotionShakeConfig();
 
 
   [Header("Editor Settings")]
@@ -107,6 +156,7 @@ public class ThirdPersonCamera : MonoBehaviour
     SetNormalVectors();
     SetPosition();
     SetRotation();
+    ApplyEffects();
   }
 
   private void InitPosition()
@@ -153,6 +203,27 @@ public class ThirdPersonCamera : MonoBehaviour
     transform.Rotate(eulerRotation.x, eulerRotation.y, eulerRotation.z);
   }
 
+  private void ApplyEffects()
+  {
+    if (motionShake.enabled)
+    {
+      ApplyMotionShake();
+    }
+  }
+
+  private void ApplyMotionShake()
+  {
+    Rigidbody rb = follow.GetComponent<Rigidbody>();
+    if (rb == null)
+    {
+      return;
+    }
+    float speed = follow.GetComponent<Rigidbody>().velocity.magnitude;
+    Vector3 shake = motionShake.Update(speed, Time.deltaTime);
+    Vector3 relativeShake = transform.right * shake.x + transform.up * shake.y;
+    transform.position += relativeShake;
+  }
+
   // private void ApplyOffset()
   // {
   //   transform.position = transform.position + (right * horizontalOffset) + (up * verticalOffset);
@@ -166,16 +237,19 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void ReadInputs()
   {
-    referenceHeight += Input.GetAxis(verticalAxis) * verticalSensitivity * (invertY ? -1 : 1);
-    cameraTranslation += Input.GetAxis(horizontalAxis) * verticalMultiplier * horizontalSensitivity * (invertX ? -1 : 1);
+    if (Application.isPlaying)
+    {
+      referenceHeight += Input.GetAxis(verticalAxis) * verticalSensitivity * (invertY ? -1 : 1);
+      cameraTranslation += Input.GetAxis(horizontalAxis) * verticalMultiplier * horizontalSensitivity * (invertX ? -1 : 1);
 
-    if (cameraTranslation > 360f)
-    {
-      cameraTranslation -= 360f;
-    }
-    else if (cameraTranslation < 0f)
-    {
-      cameraTranslation += 360f;
+      if (cameraTranslation > 360f)
+      {
+        cameraTranslation -= 360f;
+      }
+      else if (cameraTranslation < 0f)
+      {
+        cameraTranslation += 360f;
+      }
     }
   }
 
