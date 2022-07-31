@@ -85,7 +85,7 @@ If `useTargetNormal` is enabled, the camera will align it's normal to the follow
 
 A few motion effects are available out of the box. Each can be enabled/disabled and configured as you wish. The effects and configurations avaliable are:
 
-> Although I described this section as available effects (plural), as it is, the only one available is zoom out on motion. I expect to implement more effects in the future, like camera shake. For the time beeing, feel free to contribute!
+> Although I described this section as available effects (plural), as it is, the only effect available is zoom out on motion. I expect to implement more in the future, like camera shake. For the time beeing, feel free to contribute!
 
 ---
 

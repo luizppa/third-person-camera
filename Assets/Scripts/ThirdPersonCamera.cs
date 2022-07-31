@@ -5,20 +5,20 @@ using UnityEngine;
 using UnityEditor;
 
 [Serializable]
-public class RingConfiguration
+public class RingConfig
 {
   public float radius = 3f;
   public float height = 2.5f;
   public Color color = Color.red;
 
-  public RingConfiguration(float radius, float height, Color color)
+  public RingConfig(float radius, float height, Color color)
   {
     this.radius = radius;
     this.height = height;
     this.color = color;
   }
 
-  public RingConfiguration(float radius, float height)
+  public RingConfig(float radius, float height)
   {
     this.radius = radius;
     this.height = height;
@@ -31,6 +31,17 @@ public class RingConfiguration
   }
 }
 
+[Serializable]
+public class ZoomOutOnMotionConfig
+{
+  public bool enabled = true;
+  public float startSpeed = 10f;
+  public float capSpeed = 15f;
+  public float startDistanceRatio = 0.1f;
+  public float capDistanceRatio = 0.3f;
+}
+
+[ExecuteInEditMode]
 public class ThirdPersonCamera : MonoBehaviour
 {
 
@@ -39,15 +50,17 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] GameObject lookAt = null;
 
   [Header("Orbits")]
-  [SerializeField] RingConfiguration topRing = new RingConfiguration(2f, 1.4f, Color.red);
-  [SerializeField] RingConfiguration middleRing = new RingConfiguration(5f, 3f, Color.red);
-  [SerializeField] RingConfiguration bottomRing = new RingConfiguration(1f, -1f, Color.red);
+  [SerializeField] RingConfig topRing = new RingConfig(2f, 1.4f, Color.red);
+  [SerializeField] RingConfig middleRing = new RingConfig(5f, 3f, Color.red);
+  [SerializeField] RingConfig bottomRing = new RingConfig(1f, -1f, Color.red);
 
   [Header("Positioning")]
   [SerializeField] bool avoidClipping = true;
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
   [SerializeField][Range(-180, 180)] float horizontalTilt = 0f;
   [SerializeField][Range(-180, 180)] float verticalTilt = 0f;
+  // [SerializeField] float horizontalOffset = 0f;
+  // [SerializeField] float verticalOffset = 0f;
   [SerializeField] bool useTargetNormal = true;
 
   [Header("Controls")]
@@ -63,23 +76,19 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] bool invertY = true;
 
   [Header("Effects")]
-  [SerializeField] bool zoomOutOnMotion = true;
-  [ShowIf(nameof(zoomOutOnMotion))][SerializeField] float zoomOutStartSpeed = 10f;
-  [ShowIf(nameof(zoomOutOnMotion))][SerializeField] float zoomOutCapSpeed = 15f;
-  [ShowIf(nameof(zoomOutOnMotion))][SerializeField] float zoomStartDistanceRatio = 0.1f;
-  [ShowIf(nameof(zoomOutOnMotion))][SerializeField] float zoomCapDistanceRatio = 0.3f;
+  [SerializeField] ZoomOutOnMotionConfig zoomOutOnMotion = new ZoomOutOnMotionConfig();
 
 
   [Header("Editor Settings")]
   [SerializeField] bool showGizmos = true;
 
-  private float cameraTranslation = 90f;
+  private float cameraTranslation = 0f;
   private float verticalMultiplier = 10f;
   private float referenceHeight = 0f;
   private float referenceDistance;
   private float noClippingHeight;
   private float noClippingDistance;
-  private RingConfiguration cameraRing = null;
+  private RingConfig cameraRing = null;
   private Vector3 up;
   private Vector3 right;
   private Vector3 forward;
@@ -91,7 +100,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   void Update()
   {
-    if (captureCursor)
+    if (captureCursor && Application.isPlaying)
     {
       Cursor.lockState = CursorLockMode.Locked;
     }
@@ -130,18 +139,24 @@ public class ThirdPersonCamera : MonoBehaviour
 
     transform.position = follow.transform.position + heightVector + distanceVector;
     transform.RotateAround(follow.transform.position, up, cameraTranslation);
+    // ApplyOffset();
   }
 
   private void SetRotation()
   {
     LookAt(up, lookAt.transform);
 
-    Vector3 verticalAngles = right * verticalTilt;
+    Vector3 verticalAngles = forward * verticalTilt;
     Vector3 horizontalAngles = up * horizontalTilt;
 
     Vector3 eulerRotation = verticalAngles + horizontalAngles;
     transform.Rotate(eulerRotation.x, eulerRotation.y, eulerRotation.z);
   }
+
+  // private void ApplyOffset()
+  // {
+  //   transform.position = transform.position + (right * horizontalOffset) + (up * verticalOffset);
+  // }
 
   private void LookAt(Vector3 normal, Transform lookAt)
   {
@@ -187,7 +202,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private float ApplyDistanceEffects(float distance)
   {
-    if (zoomOutOnMotion)
+    if (zoomOutOnMotion.enabled)
     {
       Rigidbody rb = follow.GetComponent<Rigidbody>();
       if (rb == null)
@@ -195,8 +210,8 @@ public class ThirdPersonCamera : MonoBehaviour
         return distance;
       }
       float speed = follow.GetComponent<Rigidbody>().velocity.magnitude;
-      float speedRatio = Mathf.Clamp01((speed - zoomOutStartSpeed) / (zoomOutCapSpeed - zoomOutStartSpeed));
-      float distanceIncrease = Mathf.Lerp(zoomStartDistanceRatio, zoomCapDistanceRatio, speedRatio);
+      float speedRatio = Mathf.Clamp01((speed - zoomOutOnMotion.startSpeed) / (zoomOutOnMotion.capSpeed - zoomOutOnMotion.startSpeed));
+      float distanceIncrease = Mathf.Lerp(zoomOutOnMotion.startDistanceRatio, zoomOutOnMotion.capDistanceRatio, speedRatio);
       return distance += (distanceIncrease * distance);
     }
     else
@@ -205,7 +220,7 @@ public class ThirdPersonCamera : MonoBehaviour
     }
   }
 
-  private float EaseLerpRingRadius(RingConfiguration r1, RingConfiguration r2)
+  private float EaseLerpRingRadius(RingConfig r1, RingConfig r2)
   {
     float lerpState = Mathf.InverseLerp(r1.height, r2.height, referenceHeight);
     if (r1.radius > r2.radius)
@@ -220,25 +235,25 @@ public class ThirdPersonCamera : MonoBehaviour
     return radius;
   }
 
-  private RingConfiguration GetCameraRing()
+  private RingConfig GetCameraRing()
   {
     if (referenceHeight >= topRing.height)
     {
-      return new RingConfiguration(topRing.radius, topRing.height);
+      return new RingConfig(topRing.radius, topRing.height);
     }
     else if (referenceHeight >= middleRing.height)
     {
       float radius = EaseLerpRingRadius(middleRing, topRing);
-      return new RingConfiguration(radius, referenceHeight);
+      return new RingConfig(radius, referenceHeight);
     }
     else if (referenceHeight >= bottomRing.height)
     {
       float radius = EaseLerpRingRadius(bottomRing, middleRing);
-      return new RingConfiguration(radius, referenceHeight);
+      return new RingConfig(radius, referenceHeight);
     }
     else
     {
-      return new RingConfiguration(bottomRing.radius, bottomRing.height);
+      return new RingConfig(bottomRing.radius, bottomRing.height);
     }
   }
 
@@ -252,7 +267,7 @@ public class ThirdPersonCamera : MonoBehaviour
     }
   }
 
-  private void DrawRing(RingConfiguration ring)
+  private void DrawRing(RingConfig ring)
   {
     Vector3 up = useTargetNormal ? follow.transform.up : Vector3.up;
     Handles.color = ring.color;
