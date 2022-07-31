@@ -4,21 +4,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+public enum OrbitPosition
+{
+  Top,
+  Middle,
+  Bottom
+}
+
+#region Helper Classes
+
 [Serializable]
-public class RingConfig
+public class OrbitRing
 {
   public float radius = 3f;
   public float height = 2.5f;
   public Color color = Color.red;
 
-  public RingConfig(float radius, float height, Color color)
+  public OrbitRing(float radius, float height, Color color)
   {
     this.radius = radius;
     this.height = height;
     this.color = color;
   }
 
-  public RingConfig(float radius, float height)
+  public OrbitRing(float radius, float height)
   {
     this.radius = radius;
     this.height = height;
@@ -32,7 +41,7 @@ public class RingConfig
 }
 
 [Serializable]
-public class ZoomOutOnMotionConfig
+public class ZoomOutOnMotionEffect
 {
   public bool enabled = true;
   public float startSpeed = 10f;
@@ -42,14 +51,21 @@ public class ZoomOutOnMotionConfig
 }
 
 [Serializable]
-public class MotionShakeConfig
+public class MotionShakeEffect
 {
   public bool enabled = true;
   public float startSpeed = 10f;
-  public float verticalIntensity = 0.05f;
+  public float capSpeed = 15f;
+
+  [Header("Vertical")]
+  public float verticalStartIntensity = 0.02f;
+  public float verticalCapIntensity = 0.05f;
   public float verticalSpeed = 15f;
   [Range(0, 1)] public float verticalPhase = 0.5f;
-  public float horizontalIntensity = 0.07f;
+
+  [Header("Horizontal")]
+  public float horizontalStartIntensity = 0.03f;
+  public float horizontalCapIntensity = 0.07f;
   public float horizontalSpeed = 7.5f;
   [Range(0, 1)] public float horizontalPhase = 0f;
 
@@ -65,6 +81,11 @@ public class MotionShakeConfig
         Start();
       }
       phase += deltaTime;
+
+      float speedRatio = Mathf.InverseLerp(startSpeed, capSpeed, speed);
+      float verticalIntensity = Mathf.Lerp(verticalStartIntensity, verticalCapIntensity, speedRatio);
+      float horizontalIntensity = Mathf.Lerp(horizontalStartIntensity, horizontalCapIntensity, speedRatio);
+
       float horizontal = Mathf.Sin((Time.time * horizontalSpeed) + horizontalPhase) * horizontalIntensity;
       float vertical = Mathf.Sin((Time.time * verticalSpeed) + verticalPhase) * verticalIntensity;
       return new Vector3(horizontal, vertical, 0f);
@@ -89,26 +110,34 @@ public class MotionShakeConfig
 
 }
 
+#endregion
+
 [ExecuteInEditMode]
 public class ThirdPersonCamera : MonoBehaviour
 {
+
+  #region Inspector Settings
+
+  [Header("Editor Settings")]
+  [SerializeField] bool showGizmos = true;
+  [SerializeField] bool editorPreview = true;
 
   [Header("Targets")]
   [SerializeField] GameObject follow = null;
   [SerializeField] GameObject lookAt = null;
 
   [Header("Orbits")]
-  [SerializeField] RingConfig topRing = new RingConfig(2f, 1.4f, Color.red);
-  [SerializeField] RingConfig middleRing = new RingConfig(5f, 3f, Color.red);
-  [SerializeField] RingConfig bottomRing = new RingConfig(1f, -1f, Color.red);
+  [SerializeField] OrbitRing topRing = new OrbitRing(2f, 1.4f, Color.red);
+  [SerializeField] OrbitRing middleRing = new OrbitRing(5f, 3f, Color.red);
+  [SerializeField] OrbitRing bottomRing = new OrbitRing(1f, -1f, Color.red);
 
   [Header("Positioning")]
   [SerializeField] bool avoidClipping = true;
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
   [SerializeField][Range(-180, 180)] float horizontalTilt = 0f;
+  [SerializeField] float horizontalOffset = 0f;
   [SerializeField][Range(-180, 180)] float verticalTilt = 0f;
-  // [SerializeField] float horizontalOffset = 0f;
-  // [SerializeField] float verticalOffset = 0f;
+  [SerializeField] float verticalOffset = 0f;
   [SerializeField] bool useTargetNormal = true;
 
   [Header("Controls")]
@@ -124,12 +153,12 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] bool invertY = true;
 
   [Header("Effects")]
-  [SerializeField] ZoomOutOnMotionConfig zoomOutOnMotion = new ZoomOutOnMotionConfig();
-  [SerializeField] MotionShakeConfig motionShake = new MotionShakeConfig();
+  [SerializeField] ZoomOutOnMotionEffect zoomOutOnMotion = new ZoomOutOnMotionEffect();
+  [SerializeField] MotionShakeEffect motionShake = new MotionShakeEffect();
 
+  #endregion
 
-  [Header("Editor Settings")]
-  [SerializeField] bool showGizmos = true;
+  #region Private Variables
 
   private float cameraTranslation = 0f;
   private float verticalMultiplier = 10f;
@@ -137,32 +166,50 @@ public class ThirdPersonCamera : MonoBehaviour
   private float referenceDistance;
   private float noClippingHeight;
   private float noClippingDistance;
-  private RingConfig cameraRing = null;
+  private OrbitRing cameraRing = null;
   private Vector3 up;
   private Vector3 right;
   private Vector3 forward;
 
+  #endregion
+
+  // ===================== Lifecycle ===================== //
+  #region Lifecycle Methods
+
   void Start()
   {
-    InitPosition();
+    referenceHeight = middleRing.height;
   }
 
   void Update()
   {
-    if (captureCursor && Application.isPlaying)
+    if (Application.isPlaying || editorPreview)
     {
-      Cursor.lockState = CursorLockMode.Locked;
+      if (captureCursor && Application.isPlaying)
+      {
+        Cursor.lockState = CursorLockMode.Locked;
+      }
+      SetNormalVectors();
+      SetPosition();
+      SetRotation();
+      ApplyEffects();
     }
-    SetNormalVectors();
-    SetPosition();
-    SetRotation();
-    ApplyEffects();
   }
 
-  private void InitPosition()
+  private void OnDrawGizmos()
   {
-    referenceHeight = middleRing.height;
+    if (follow != null && showGizmos)
+    {
+      DrawRing(topRing);
+      DrawRing(middleRing);
+      DrawRing(bottomRing);
+    }
   }
+
+  #endregion
+
+  // ===================== Update steps ===================== //
+  #region Update Steps
 
   private void SetNormalVectors()
   {
@@ -189,7 +236,6 @@ public class ThirdPersonCamera : MonoBehaviour
 
     transform.position = follow.transform.position + heightVector + distanceVector;
     transform.RotateAround(follow.transform.position, up, cameraTranslation);
-    // ApplyOffset();
   }
 
   private void SetRotation()
@@ -201,6 +247,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     Vector3 eulerRotation = verticalAngles + horizontalAngles;
     transform.Rotate(eulerRotation.x, eulerRotation.y, eulerRotation.z);
+    ApplyPositionOffset();
   }
 
   private void ApplyEffects()
@@ -211,29 +258,10 @@ public class ThirdPersonCamera : MonoBehaviour
     }
   }
 
-  private void ApplyMotionShake()
-  {
-    Rigidbody rb = follow.GetComponent<Rigidbody>();
-    if (rb == null)
-    {
-      return;
-    }
-    float speed = follow.GetComponent<Rigidbody>().velocity.magnitude;
-    Vector3 shake = motionShake.Update(speed, Time.deltaTime);
-    Vector3 relativeShake = transform.right * shake.x + transform.up * shake.y;
-    transform.position += relativeShake;
-  }
+  #endregion
 
-  // private void ApplyOffset()
-  // {
-  //   transform.position = transform.position + (right * horizontalOffset) + (up * verticalOffset);
-  // }
-
-  private void LookAt(Vector3 normal, Transform lookAt)
-  {
-    Vector3 targetDirection = (lookAt.position - transform.position).normalized;
-    transform.localRotation = Quaternion.LookRotation(targetDirection, normal);
-  }
+  // ===================== Input ===================== //
+  #region Input Methods
 
   private void ReadInputs()
   {
@@ -250,6 +278,33 @@ public class ThirdPersonCamera : MonoBehaviour
       {
         cameraTranslation += 360f;
       }
+    }
+  }
+
+  #endregion
+
+  // ===================== Positioning ===================== //
+  #region Positioning Methods
+
+  private OrbitRing GetCameraRing()
+  {
+    if (referenceHeight >= topRing.height)
+    {
+      return new OrbitRing(topRing.radius, topRing.height);
+    }
+    else if (referenceHeight >= middleRing.height)
+    {
+      float radius = EaseLerpRingRadius(middleRing, topRing);
+      return new OrbitRing(radius, referenceHeight);
+    }
+    else if (referenceHeight >= bottomRing.height)
+    {
+      float radius = EaseLerpRingRadius(bottomRing, middleRing);
+      return new OrbitRing(radius, referenceHeight);
+    }
+    else
+    {
+      return new OrbitRing(bottomRing.radius, bottomRing.height);
     }
   }
 
@@ -274,6 +329,27 @@ public class ThirdPersonCamera : MonoBehaviour
     }
   }
 
+  private void ApplyPositionOffset()
+  {
+    transform.position = transform.position + (transform.right * horizontalOffset) + (transform.up * verticalOffset);
+  }
+
+  #endregion
+
+  // ===================== Rotation ===================== //
+  #region Rotation Methods
+
+  private void LookAt(Vector3 normal, Transform lookAt)
+  {
+    Vector3 targetDirection = (lookAt.position - transform.position).normalized;
+    transform.localRotation = Quaternion.LookRotation(targetDirection, normal);
+  }
+
+  #endregion
+
+  // ===================== Effects ===================== //
+  #region Effects Methods
+
   private float ApplyDistanceEffects(float distance)
   {
     if (zoomOutOnMotion.enabled)
@@ -294,7 +370,25 @@ public class ThirdPersonCamera : MonoBehaviour
     }
   }
 
-  private float EaseLerpRingRadius(RingConfig r1, RingConfig r2)
+  private void ApplyMotionShake()
+  {
+    Rigidbody rb = follow.GetComponent<Rigidbody>();
+    if (rb == null)
+    {
+      return;
+    }
+    float speed = follow.GetComponent<Rigidbody>().velocity.magnitude;
+    Vector3 shake = motionShake.Update(speed, Time.deltaTime);
+    Vector3 relativeShake = transform.right * shake.x + transform.up * shake.y;
+    transform.position += relativeShake;
+  }
+
+  #endregion
+
+  // ===================== Utils ===================== //
+  #region Utils Methods
+
+  private float EaseLerpRingRadius(OrbitRing r1, OrbitRing r2)
   {
     float lerpState = Mathf.InverseLerp(r1.height, r2.height, referenceHeight);
     if (r1.radius > r2.radius)
@@ -309,43 +403,122 @@ public class ThirdPersonCamera : MonoBehaviour
     return radius;
   }
 
-  private RingConfig GetCameraRing()
-  {
-    if (referenceHeight >= topRing.height)
-    {
-      return new RingConfig(topRing.radius, topRing.height);
-    }
-    else if (referenceHeight >= middleRing.height)
-    {
-      float radius = EaseLerpRingRadius(middleRing, topRing);
-      return new RingConfig(radius, referenceHeight);
-    }
-    else if (referenceHeight >= bottomRing.height)
-    {
-      float radius = EaseLerpRingRadius(bottomRing, middleRing);
-      return new RingConfig(radius, referenceHeight);
-    }
-    else
-    {
-      return new RingConfig(bottomRing.radius, bottomRing.height);
-    }
-  }
-
-  private void OnDrawGizmos()
-  {
-    if (follow != null && showGizmos)
-    {
-      DrawRing(topRing);
-      DrawRing(middleRing);
-      DrawRing(bottomRing);
-    }
-  }
-
-  private void DrawRing(RingConfig ring)
+  private void DrawRing(OrbitRing ring)
   {
     Vector3 up = useTargetNormal ? follow.transform.up : Vector3.up;
     Handles.color = ring.color;
     Vector3 position = follow.transform.position + (up * ring.height);
     Handles.DrawWireDisc(position, up, ring.radius);
   }
+
+  #endregion
+
+  // ===================== Setters ===================== //
+  #region Setters Methods
+
+  public void SetFollow(GameObject follow)
+  {
+    this.follow = follow;
+  }
+
+  public void SetLookAt(GameObject lookAt)
+  {
+    this.lookAt = lookAt;
+  }
+
+  public void SetOrbitRing(OrbitPosition position, OrbitRing orbit)
+  {
+    if (position == OrbitPosition.Top)
+    {
+      topRing = orbit;
+    }
+    else if (position == OrbitPosition.Middle)
+    {
+      middleRing = orbit;
+    }
+    else if (position == OrbitPosition.Bottom)
+    {
+      bottomRing = orbit;
+    }
+  }
+
+  public void SetAvoidClipping(bool avoidClipping)
+  {
+    this.avoidClipping = avoidClipping;
+  }
+
+  public void SetClippingOffset(float clippingOffset)
+  {
+    this.clippingOffset = clippingOffset;
+  }
+
+  public void SetHorizontalTilt(float horizontalTilt)
+  {
+    this.horizontalTilt = horizontalTilt;
+  }
+
+  public void SetHorizontalOffset(float horizontalOffset)
+  {
+    this.horizontalOffset = horizontalOffset;
+  }
+
+  public void SetVerticalTilt(float verticalTilt)
+  {
+    this.verticalTilt = verticalTilt;
+  }
+  public void SetVerticalOffset(float verticalOffset)
+  {
+    this.verticalOffset = verticalOffset;
+  }
+  public void SetUseTargetNormal(bool useTargetNormal)
+  {
+    this.useTargetNormal = useTargetNormal;
+  }
+
+  public void SetCaptureCursor(bool captureCursor)
+  {
+    this.captureCursor = captureCursor;
+  }
+
+  public void SetHorizontalAxis(string horizontalAxis)
+  {
+    this.horizontalAxis = horizontalAxis;
+  }
+
+  public void SetHorizontalSensitivity(float horizontalSensitivity)
+  {
+    this.horizontalSensitivity = horizontalSensitivity;
+  }
+
+  public void SetInvertX(bool invertX)
+  {
+    this.invertX = invertX;
+  }
+
+  public void SetVerticalAxis(string verticalAxis)
+  {
+    this.verticalAxis = verticalAxis;
+  }
+
+  public void SetVerticalSensitivity(float verticalSensitivity)
+  {
+    this.verticalSensitivity = verticalSensitivity;
+  }
+
+  public void SetInvertY(bool invertY)
+  {
+    this.invertY = invertY;
+  }
+
+  public void SetZoomOutOnMotion(ZoomOutOnMotionEffect zoomOutOnMotion)
+  {
+    this.zoomOutOnMotion = zoomOutOnMotion;
+  }
+
+  public void SetMotionShake(MotionShakeEffect motionShake)
+  {
+    this.motionShake = motionShake;
+  }
+
+  #endregion
 }
