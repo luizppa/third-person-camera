@@ -414,7 +414,6 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void DrawRing(OrbitRing ring)
   {
-    Vector3 up = useTargetNormal ? follow.transform.up : Vector3.up;
     Handles.color = ring.color;
     Vector3 position = follow.transform.position + (up * ring.height);
     Handles.DrawWireDisc(position, up, ring.radius);
