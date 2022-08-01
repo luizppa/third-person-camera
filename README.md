@@ -49,13 +49,15 @@ The resulting rings are shwon in the editor like so:
 
 The position of the camera can be further adjusted with the following attributes:
 
-| Attribute           | Type    | Default value  | Description                                                                                          |
-|---------------------|---------|----------------|------------------------------------------------------------------------------------------------------|
-| `avoidClipping`     | boolean | `true`         | Defines whether the camera should avoid clipping into objects, see the example below                 |
-| `clippingOffset`    | float   | 0              | The distance between the camera and any clipping objects if "avoidClipping" is enabled               |
-| `horizontalTilt`    | float   | 0              | The horizontal angle offset for the camera view                                                      |
-| `verticalTilt`      | float   | 0              | The vertical angle offset for the camera view                                                        |
-| `useTargetNormal`   | boolean | `true`         | If enabled, the camera will align its normal with the follow target's normal, see the example below  |
+| Attribute          | Type    | Default value | Description                                                                                         |
+|--------------------|---------|---------------|-----------------------------------------------------------------------------------------------------|
+| `avoidClipping`    | boolean | `true`        | Defines whether the camera should avoid clipping into objects, see the example below                |
+| `clippingOffset`   | float   | 0             | The distance between the camera and any clipping objects if "avoidClipping" is enabled              |
+| `horizontalTilt`   | float   | 0             | The horizontal angle offset for the camera view                                                     |
+| `horizontalOffset` | float   | 0             | The horizontal offset on the camera position in unities                                             |
+| `verticalTilt`     | float   | 0             | The vertical angle offset for the camera view                                                       |
+| `verticalOffset`   | float   | 0             | The vertical offset on the camera position in unities                                               |
+| `useTargetNormal`  | boolean | `true`        | If enabled, the camera will align its normal with the follow target's normal, see the example below |
 
 If `avoidClipping` is enabled, the camera will try to avoid clipping into the ground and other surrouding objects (as long as they have a collider) by moving closer to the follow target. An offset can be applied to move the camera further away from the clipping objects, which can help avoid seeing through objects, however it currently may lead to some glitches regarding the camera position. The following gif illustrates this behavior (true on the left, false on the right).
   
@@ -139,6 +141,12 @@ The motion shake effect is a way to make the motion feel more natural and dynami
 | `horizontalPhase`          | float   | 0              | At which point of the cycle should the camera start (horizontally)            |
 
 This effect is done by using a sinusoidal wave to move the camera vertically and horizontally. The vertical wave is a sinusoidal wave with a frequency of `verticalSpeed` and a phase of `verticalPhase`. The horizontal wave is a sinusoidal wave with a frequency of `horizontalSpeed` and a phase of `horizontalPhase`.
+
+The result can be seen in the following gif:
+
+<p align="center">
+  <img src="./Assets/Docs/motion-shake-effect.gif" alt="Zoom out on motion gif" width="65%">
+</p>
 
 ## 🐞 Contributing
 
