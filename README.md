@@ -3,7 +3,7 @@
 Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinemachine](https://unity.com/unity/features/editor/art-and-design/cinemachine), the code is entirely mine with exception for for the [ShowIfAttribute](./Assets/Scripts/ShowIfAttribute.cs) and [ShowIfAttributeDrawer](./Assets/Editor/ShowIfAttributeDrawer.cs) scripts.  Although inspired by, it is much more simple (and depending on your necessities, much more limited) than the original Cinemachine scripts. It gives you, however, the possibility to align the normal of the camera plane with the target's normal.
 
 - [🎥 Unity Third Person Camera](#-unity-third-person-camera)
-  - [👾 Usage](#-usage)
+  - [👾 Installation](#-installation)
   - [🧩 Features](#-features)
     - [🪐 Orbits](#-orbits)
     - [📌 Positioning](#-positioning)
@@ -13,7 +13,7 @@ Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinema
       - [Motion shake](#motion-shake)
   - [🐞 Contributing](#-contributing)
 
-## 👾 Usage
+## 👾 Installation
 
 Paste the [ThirdPersonCamera.cs](./Assets/Scripts/ThirdPersonCamera.cs) and [ShowIfAttribute.cs](Assets/Scripts/ShowIfAttribute.cs) script into your project.
 
@@ -133,11 +133,11 @@ The motion shake effect is a way to make the motion feel more natural and dynami
 | `capSpeed`                 | float   | 15             | Until which speed (in m/s) should the camera increase the shake intensity     |
 | `verticalStartIntensity`   | float   | 0.02           | How much should the camera move vertically as it starts to shake              |
 | `verticalCapIntensity`     | float   | 0.05           | How much should the camera move vertically at most as it shakes               |
-| `verticalSpeed`            | float   | 15             | How fast should the camera move vertically as it shakes (cycles per second)   |
+| `verticalSpeed`            | float   | 15             | How fast should the camera move vertically as it shakes                       |
 | `verticalPhase`            | float   | 0.5            | At which point of the cycle should the camera start (vertically)              |
 | `horizontalStartIntensity` | float   | 0.03           | How much should the camera move horizontally as it starts to shake            |
 | `horizontalCapIntensity`   | float   | 0.07           | How much should the camera move horizontally at most as it shakes             |
-| `horizontalSpeed`          | float   | 7.5            | How fast should the camera move horizontally as it shakes (cycles per second) |
+| `horizontalSpeed`          | float   | 7.5            | How fast should the camera move horizontally as it shakes                     |
 | `horizontalPhase`          | float   | 0              | At which point of the cycle should the camera start (horizontally)            |
 
 This effect is done by using a sinusoidal wave to move the camera vertically and horizontally. The vertical wave is a sinusoidal wave with a frequency of `verticalSpeed` and a phase of `verticalPhase`. The horizontal wave is a sinusoidal wave with a frequency of `horizontalSpeed` and a phase of `horizontalPhase`.
