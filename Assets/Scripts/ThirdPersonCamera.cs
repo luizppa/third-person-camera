@@ -51,7 +51,7 @@ public class ZoomOutOnMotionEffect
 
   public float GetDistanceIncreaseForSpeed(float speed)
   {
-    if (enabled && speed >= startSpeed)
+    if (enabled && speed > startSpeed)
     {
       float speedRatio = Mathf.InverseLerp(startSpeed, capSpeed, speed);
       float distanceIncrease = 1 + Mathf.Lerp(startDistanceRatio, capDistanceRatio, speedRatio);
@@ -147,6 +147,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   [Header("Positioning")]
   [SerializeField] bool avoidClipping = true;
+  [SerializeField] float clipDistance = 5f;
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
   [SerializeField][Range(-180, 180)] float horizontalTilt = 0f;
   [SerializeField] float horizontalOffset = 0f;
@@ -243,7 +244,10 @@ public class ThirdPersonCamera : MonoBehaviour
     float distance = cameraRing.GetBorderDistanceToReference();
     referenceDistance = Mathf.Sqrt((distance * distance) - (referenceHeight * referenceHeight));
     referenceDistance = ApplyZoomOutOnMotion(referenceDistance);
-    CorrectClipping(distance);
+    if (avoidClipping)
+    {
+      CorrectClipping(Mathf.Min(distance, clipDistance));
+    }
 
     Vector3 heightVector = up * (avoidClipping ? noClippingHeight : referenceHeight);
     Vector3 distanceVector = -forward * (avoidClipping ? noClippingDistance : referenceDistance);
@@ -453,6 +457,11 @@ public class ThirdPersonCamera : MonoBehaviour
   public void SetAvoidClipping(bool avoidClipping)
   {
     this.avoidClipping = avoidClipping;
+  }
+
+  public void SetClipDistance(float clipDistance)
+  {
+    this.clipDistance = clipDistance;
   }
 
   public void SetClippingOffset(float clippingOffset)
