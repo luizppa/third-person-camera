@@ -29,11 +29,7 @@ Most features are similar to the original Cinemachine scripts. The only differen
 
 ### 🪐 Orbits
 
-The camera uses three different orbits to position itself around the follow target. Each orbit can be configured regarding his height, radius and color in the editor through the inspector:
-
-<p align="center">
-  <img src="./Assets/Docs/ring-configuration.png" alt="Ring configuration"/>
-</p>
+The camera uses three different orbits to position itself around the follow target. Each orbit can be configured regarding his height, radius and color in the editor through the inspector.
 
 The height is relative to the transform of the follow target.
 
@@ -52,7 +48,8 @@ The position of the camera can be further adjusted with the following attributes
 | Attribute          | Type    | Default value | Description                                                                                         |
 |--------------------|---------|---------------|-----------------------------------------------------------------------------------------------------|
 | `avoidClipping`    | boolean | `true`        | Defines whether the camera should avoid clipping into objects, see the example below                |
-| `clippingOffset`   | float   | 0             | The distance between the camera and any clipping objects if "avoidClipping" is enabled              |
+| `clipDistance`     | float   | 5             | The maximum distance of a collider to the camera's `follow` target to be considered as clipping     |
+| `clippingOffset`   | float   | 0             | The distance between the camera and any clipping objects if `avoidClipping` is enabled              |
 | `horizontalTilt`   | float   | 0             | The horizontal angle offset for the camera view                                                     |
 | `horizontalOffset` | float   | 0             | The horizontal offset on the camera position in unities                                             |
 | `verticalTilt`     | float   | 0             | The vertical angle offset for the camera view                                                       |
