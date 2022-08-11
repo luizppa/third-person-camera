@@ -75,13 +75,13 @@ public class MotionShakeEffect
   public float verticalStartIntensity = 0.02f;
   public float verticalCapIntensity = 0.05f;
   public float verticalSpeed = 15f;
-  [Range(0, 1)] public float verticalPhase = 0.5f;
+  [Range(0, 2)] public float verticalPhase = 0.5f;
 
   [Header("Horizontal")]
   public float horizontalStartIntensity = 0.03f;
   public float horizontalCapIntensity = 0.07f;
   public float horizontalSpeed = 7.5f;
-  [Range(0, 1)] public float horizontalPhase = 0f;
+  [Range(0, 2)] public float horizontalPhase = 0f;
 
   private float phase = 0f;
   private bool running = false;
@@ -100,8 +100,8 @@ public class MotionShakeEffect
       float verticalIntensity = Mathf.Lerp(verticalStartIntensity, verticalCapIntensity, speedRatio);
       float horizontalIntensity = Mathf.Lerp(horizontalStartIntensity, horizontalCapIntensity, speedRatio);
 
-      float horizontal = Mathf.Sin((Time.time * horizontalSpeed) + horizontalPhase) * horizontalIntensity;
-      float vertical = Mathf.Sin((Time.time * verticalSpeed) + verticalPhase) * verticalIntensity;
+      float horizontal = Mathf.Sin((Time.time * horizontalSpeed) + (horizontalPhase * Mathf.PI)) * horizontalIntensity;
+      float vertical = Mathf.Sin((Time.time * verticalSpeed) + (verticalPhase * Mathf.PI)) * verticalIntensity;
       return new Vector3(horizontal, vertical, 0f);
     }
     else
