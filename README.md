@@ -139,6 +139,8 @@ The motion shake effect is a way to make the motion feel more natural and dynami
 
 This effect is done by using a sinusoidal wave to move the camera vertically and horizontally. The vertical wave is a sinusoidal wave with a frequency of `verticalSpeed` and a phase of `verticalPhase`. The horizontal wave is a sinusoidal wave with a frequency of `horizontalSpeed` and a phase of `horizontalPhase`.
 
+The phase must be between 0 and 2 (the reason being that it is going to be multiplied by PI and then applied to the sine function, as the sine wave has a period of 2PI, any value out of this range would be redundant).
+
 The result can be seen in the following gif:
 
 <p align="center">
