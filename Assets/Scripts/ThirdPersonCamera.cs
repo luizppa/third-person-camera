@@ -46,7 +46,7 @@ public class ZoomOutOnMotionEffect
   public bool enabled = true;
   public float startSpeed = 10f;
   public float capSpeed = 15f;
-  public float startDistanceRatio = 0.1f;
+  public float startDistanceRatio = 0f;
   public float capDistanceRatio = 0.3f;
 
   public float GetDistanceIncreaseForSpeed(float speed)
@@ -146,6 +146,8 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] OrbitRing bottomRing = new OrbitRing(1f, -1f, Color.red);
 
   [Header("Positioning")]
+  [SerializeField] bool lockHeight = false;
+  [SerializeField] bool lockTranslation = false;
   [SerializeField] bool avoidClipping = true;
   [SerializeField] float clipDistance = 5f;
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
@@ -285,16 +287,21 @@ public class ThirdPersonCamera : MonoBehaviour
   {
     if (Application.isPlaying)
     {
-      referenceHeight += Input.GetAxis(verticalAxis) * verticalSensitivity * (invertY ? -1 : 1);
-      cameraTranslation += Input.GetAxis(horizontalAxis) * verticalMultiplier * horizontalSensitivity * (invertX ? -1 : 1);
-
-      if (cameraTranslation > 360f)
+      if (!lockHeight)
       {
-        cameraTranslation -= 360f;
+        referenceHeight += Input.GetAxis(verticalAxis) * verticalSensitivity * (invertY ? -1 : 1);
       }
-      else if (cameraTranslation < 0f)
+      if (!lockTranslation)
       {
-        cameraTranslation += 360f;
+        cameraTranslation += Input.GetAxis(horizontalAxis) * verticalMultiplier * horizontalSensitivity * (invertX ? -1 : 1);
+        if (cameraTranslation > 360f)
+        {
+          cameraTranslation -= 360f;
+        }
+        else if (cameraTranslation < 0f)
+        {
+          cameraTranslation += 360f;
+        }
       }
     }
   }
@@ -452,6 +459,16 @@ public class ThirdPersonCamera : MonoBehaviour
     {
       bottomRing = orbit;
     }
+  }
+
+  public void SetLockHeight(bool lockHeight)
+  {
+    this.lockHeight = lockHeight;
+  }
+
+  public void SetLockTranslation(bool lockTranslation)
+  {
+    this.lockTranslation = lockTranslation;
   }
 
   public void SetAvoidClipping(bool avoidClipping)

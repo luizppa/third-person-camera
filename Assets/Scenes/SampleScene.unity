@@ -926,7 +926,7 @@ MonoBehaviour:
     verticalStartIntensity: 0.02
     verticalCapIntensity: 0.05
     verticalSpeed: 15
-    verticalPhase: 0.5
+    verticalPhase: 1.5
     horizontalStartIntensity: 0.03
     horizontalCapIntensity: 0.07
     horizontalSpeed: 7.5

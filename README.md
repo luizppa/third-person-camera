@@ -47,6 +47,8 @@ The position of the camera can be further adjusted with the following attributes
 
 | Attribute          | Type    | Default value | Description                                                                                         |
 |--------------------|---------|---------------|-----------------------------------------------------------------------------------------------------|
+| `lockHeight`       | boolean | `false`       | If set to true, the camera will not move vertically                                                 |
+| `lockTranslation`  | boolean | `false`       | If set to true, the camera will not rotate around it's `follow` target                              |
 | `avoidClipping`    | boolean | `true`        | Defines whether the camera should avoid clipping into objects, see the example below                |
 | `clipDistance`     | float   | 5             | The maximum distance of a collider to the camera's `follow` target to be considered as clipping     |
 | `clippingOffset`   | float   | 0             | The distance between the camera and any clipping objects if `avoidClipping` is enabled              |
@@ -99,18 +101,18 @@ The zoom out on motion effect is a simple way to make the camera zoom out on the
 |----------------------|---------|----------------|-------------------------------------------------------------------|
 | `startSpeed`         | float   | 10             | At which speed (in m/s) should the camera begin to zoom out       |
 | `capSpeed`           | float   | 15             | At which speed (in m/s) should the camera stop to zoom out        |
-| `startDistanceRatio` | float   | 0.1            | How much should the camera zoom out (in %) when it starts to move |
+| `startDistanceRatio` | float   | 0              | How much should the camera zoom out (in %) when it starts to move |
 | `capDistanceRatio`   | float   | 0.3            | How much should the camera zoom out (in %) when it stops to move  |
 
 The effect is done by increasing the camera and the target by a certain amount, this amount is determined by a linear interpolation of the `zoomStartDistanceRatio` and `zoomCapDistanceRatio` with a value equals to the inverse linear interpolation of the target's speed between `zoomOutStartSpeed` and `zoomCapDistanceRatio`.
 
-For example, suppose we are using the default configurations. If the target is below 10 m/s, the camera will be at it's default distance, as the target increases it's speed beyond 10 m/s, the camera will start to zoom out. At a speed of 12.5 m/s, the inverse linear interpolation value will be 0.5, so the camera will zoom out by a value equals the linear interpolation of the speed at 0.5, that is, 0.2, the equation is:
+For example, suppose we are using the default configurations. If the target is below 10 m/s, the camera will be at it's default distance, as the target increases it's speed beyond 10 m/s, the camera will start to zoom out. At a speed of 12.5 m/s, the inverse linear interpolation value will be 0.5, so the camera will zoom out by a value equals the linear interpolation of the speed at 0, that is, 0.3, the equation is:
 
 ```
-(v * zoomStartDistanceRatio) + ((1 - v) * zoomCapDistanceRatio)
+(v * startDistanceRatio) + ((1 - v) * capDistanceRatio)
 ```
 
-with `v = 0.5`. The zoom out amount is represented by the percentage of the default distance that will be added, therefore the camera will zoom out by 20% of the default distance (120% in total). Past the cap speed of 15 m/s, the camera will always be zoomed out by 30%.
+with `v = 0.5`. The zoom out amount is represented by the percentage of the default distance that will be added, therefore the camera will zoom out by 15% of the default distance (115% in total). Past the cap speed of 15 m/s, the camera will always be zoomed out by 30%.
 
 The result can be seen in the following gif:
 
