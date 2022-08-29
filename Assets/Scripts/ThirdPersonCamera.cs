@@ -147,7 +147,9 @@ public class ThirdPersonCamera : MonoBehaviour
 
   [Header("Positioning")]
   [SerializeField] bool lockHeight = false;
+  [SerializeField][ShowIf("lockHeight")] float fixedHeight = .5f;
   [SerializeField] bool lockTranslation = false;
+  [SerializeField][ShowIf("lockTranslation")] float fixedTranslation = 0f;
   [SerializeField] bool avoidClipping = true;
   [SerializeField] float clipDistance = 5f;
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
@@ -287,11 +289,20 @@ public class ThirdPersonCamera : MonoBehaviour
   {
     if (Application.isPlaying)
     {
-      if (!lockHeight)
+      if (lockHeight)
+      {
+        referenceHeight = fixedHeight;
+      }
+      else
       {
         referenceHeight += Input.GetAxis(verticalAxis) * verticalSensitivity * (invertY ? -1 : 1);
       }
-      if (!lockTranslation)
+
+      if (lockTranslation)
+      {
+        cameraTranslation = fixedTranslation;
+      }
+      else
       {
         cameraTranslation += Input.GetAxis(horizontalAxis) * verticalMultiplier * horizontalSensitivity * (invertX ? -1 : 1);
         if (cameraTranslation > 360f)
