@@ -1,6 +1,6 @@
 # 🎥 Unity Third Person Camera
 
-Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinemachine](https://unity.com/unity/features/editor/art-and-design/cinemachine), the code is entirely mine with exception for for the [ShowIfAttribute](./Assets/Scripts/ShowIfAttribute.cs) and [ShowIfAttributeDrawer](./Assets/Editor/ShowIfAttributeDrawer.cs) scripts.  Although inspired by, it is much more simple (and depending on your necessities, much more limited) than the original Cinemachine scripts. It gives you, however, the possibility to align the normal of the camera plane with the target's normal.
+Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinemachine](https://unity.com/unity/features/editor/art-and-design/cinemachine), the code is entirely mine with exception for for the [ShowIfAttribute](./Assets/LuizPhilippe/ThirdPersonCamera/Scripts/ShowIfAttribute.cs) and [ShowIfAttributeDrawer](./Assets/LuizPhilippe/ThirdPersonCamera/Editor/ShowIfAttributeDrawer.cs) scripts.  Although inspired by, it is much more simple (and depending on your necessities, much more limited) than the original Cinemachine scripts. It gives you, however, the possibility to align the normal of the camera plane with the target's normal.
 
 - [🎥 Unity Third Person Camera](#-unity-third-person-camera)
   - [👾 Installation](#-installation)
@@ -15,9 +15,9 @@ Third person camera behaviour for Unity. Concept was inspired by Unity's [Cinema
 
 ## 👾 Installation
 
-Paste the [ThirdPersonCamera.cs](./Assets/Scripts/ThirdPersonCamera.cs) and [ShowIfAttribute.cs](Assets/Scripts/ShowIfAttribute.cs) script into your project.
+Paste the [ThirdPersonCamera.cs](./Assets/LuizPhilippe/ThirdPersonCamera/Scripts/ThirdPersonCamera.cs) and [ShowIfAttribute.cs](./Assets/LuizPhilippe/ThirdPersonCamera/Scripts/ShowIfAttribute.cs) script into your project.
 
-Paste the [ShowIfAttributeDrawer.cs](./Assets/Editor/ShowIfAttributeDrawer.cs) script into any folder named "Editor" in your project.
+Paste the [ShowIfAttributeDrawer.cs](./Assets/LuizPhilippe/ThirdPersonCamera/Editor/ShowIfAttributeDrawer.cs) script into any folder named "Editor" in your project.
 
 Attach the ThirdPersonCamera script to your camera and tune the attributes to your needs. Bind the Game Object which the camera should follow to the `follow` property. Bind the Game Object which the camera should look at to the `lookAt` property.
 
