@@ -433,9 +433,11 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void DrawRing(OrbitRing ring)
   {
+#if UNITY_EDITOR
     Handles.color = ring.color;
     Vector3 position = follow.transform.position + (up * ring.height);
     Handles.DrawWireDisc(position, up, ring.radius);
+#endif
   }
 
   #endregion
