@@ -151,7 +151,8 @@ public class ThirdPersonCamera : MonoBehaviour
   [SerializeField] bool lockTranslation = false;
   [SerializeField][Range(0f, 360f)][ShowIf("lockTranslation")] float fixedTranslation = 0f;
   [SerializeField] bool avoidClipping = true;
-  [SerializeField] float clipDistance = 5f;
+  [ShowIf(nameof(avoidClipping))][SerializeField] LayerMask avoidClippingLayerMask = 0;
+  [ShowIf(nameof(avoidClipping))][SerializeField] float clipDistance = 5f;
   [ShowIf(nameof(avoidClipping))][SerializeField] float clippingOffset = 0f;
   [SerializeField][Range(-180, 180)] float horizontalTilt = 0f;
   [SerializeField] float horizontalOffset = 0f;
@@ -202,7 +203,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
   void Update()
   {
-    if (Application.isPlaying || editorPreview)
+    if ((Application.isPlaying || editorPreview) && Time.timeScale > 0)
     {
       if (captureCursor && Application.isPlaying)
       {
@@ -343,10 +344,10 @@ public class ThirdPersonCamera : MonoBehaviour
 
   private void CorrectClipping(float raycastDistance)
   {
-    RaycastHit hit;
     Ray ray = new Ray(follow.transform.position, (transform.position - follow.transform.position).normalized);
+    RaycastHit hit;
 
-    if (avoidClipping && Physics.Raycast(ray, out hit, raycastDistance))
+    if (Physics.Raycast(ray, out hit, raycastDistance, avoidClippingLayerMask, QueryTriggerInteraction.Ignore))
     {
       float safeDistance = hit.distance - clippingOffset;
       float sinAngl = referenceHeight / raycastDistance;
