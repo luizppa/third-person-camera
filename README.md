@@ -33,9 +33,9 @@ The camera uses three different orbits to position itself around the follow targ
 
 The height is relative to the transform of the follow target.
 
-The camera circles around the target with a radius that is equal to the quadractic interpolation of the surrounding rings's radius and its height is clamped by the top and bottom rings.
+The camera circles around the target with a radius that is equal to the quadratic interpolation of the surrounding rings's radius and its height is clamped by the top and bottom rings.
 
-The resulting rings are shwon in the editor like so:
+The resulting rings are shown in the editor like so:
 
 <p align="center">
   <img src="./Assets/Docs/orbits.png" alt="Rings shown in editor"/>
@@ -58,7 +58,7 @@ The position of the camera can be further adjusted with the following attributes
 | `verticalOffset`   | float   | 0             | The vertical offset on the camera position in unities                                               |
 | `useTargetNormal`  | boolean | `true`        | If enabled, the camera will align its normal with the follow target's normal, see the example below |
 
-If `avoidClipping` is enabled, the camera will try to avoid clipping into the ground and other surrouding objects (as long as they have a collider) by moving closer to the follow target. An offset can be applied to move the camera further away from the clipping objects, which can help avoid seeing through objects, however it currently may lead to some glitches regarding the camera position. The following gif illustrates this behavior (true on the left, false on the right).
+If `avoidClipping` is enabled, the camera will try to avoid clipping into the ground and other surrounding objects (as long as they have a collider) by moving closer to the follow target. An offset can be applied to move the camera further away from the clipping objects, which can help avoid seeing through objects, however it currently may lead to some glitches regarding the camera position. The following gif illustrates this behavior (true on the left, false on the right).
   
 <p align="center">
   <img src="./Assets/Docs/no-clipping.gif" alt="No camera clipping gif" width="45%">
@@ -76,7 +76,7 @@ If `useTargetNormal` is enabled, the camera will align it's normal to the follow
 
 | Attribute               | Type    | Default value  | Description                                                           |
 |-------------------------|---------|----------------|-----------------------------------------------------------------------|
-| `horizontalAxis`        | string  | `"Mouse X"`    | Defines the input axis used for the hotizontal movement of the camera |
+| `horizontalAxis`        | string  | `"Mouse X"`    | Defines the input axis used for the horizontal movement of the camera |
 | `horizontalSensitivity` | float   | 1              | The multiplier for the horizontal input value                         |
 | `invertX`               | boolean | `false`        | Defines whether the horizontal movement should be inverted            |
 | `verticalAxis`          | string  | `"Mouse Y"`    | Defines the input axis used for the vertical movement of the camera   |
@@ -85,9 +85,9 @@ If `useTargetNormal` is enabled, the camera will align it's normal to the follow
 
 ### ✨ Effects
 
-A few motion effects are available out of the box. Each can be enabled/disabled and configured as you wish. The effects and configurations avaliable are:
+A few motion effects are available out of the box. Each can be enabled/disabled and configured as you wish. The effects and configurations available are:
 
-> Although I described this section as available effects (plural), as it is, there are only two effects available, zoom out on motion and motion shake. I expect to implement more in the future, for the time beeing, feel free to contribute!
+> Although I described this section as available effects (plural), as it is, there are only two effects available, zoom out on motion and motion shake. I expect to implement more in the future, for the time being, feel free to contribute!
 
 ---
 
